@@ -9,4 +9,12 @@ class Advertisement extends Model
 {
     /** @use HasFactory<\Database\Factories\AdvertisementFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'image',
+        'url',
+        'position',
+        'is_active',
+    ];
 }

@@ -100,9 +100,8 @@
             </div>
 
             <!-- Ad Widget -->
-            <div class="bg-gray-100 h-64 flex items-center justify-center text-gray-400 text-xs rounded-lg border-2 border-dashed border-gray-200">
-                IKLAN SIDEBAR
-            </div>
+            @include('partials._sidebar_ads')
+
         </div>
     </div>
 @endsection

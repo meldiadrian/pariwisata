@@ -43,9 +43,31 @@
                 </a>
                 
                 <div class="hidden lg:flex space-x-6 font-semibold uppercase text-sm">
-                    @foreach($categories as $category)
-                        <a href="{{ route('news.category', $category->slug) }}" class="hover:text-red-700 transition">{{ $category->name }}</a>
-                    @endforeach
+                    @if(!empty($setting->main_menu) && is_array($setting->main_menu))
+                        @foreach($setting->main_menu as $menuItem)
+                            @if(isset($menuItem['type']) && $menuItem['type'] === 'page' && !empty($menuItem['page_id']))
+                                @php
+                                    $page = \App\Models\Page::find($menuItem['page_id']);
+                                @endphp
+                                @if($page)
+                                    <a href="{{ route('page.show', $page->slug) }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
+                                @endif
+                            @elseif(isset($menuItem['type']) && $menuItem['type'] === 'category' && !empty($menuItem['category_id']))
+                                @php
+                                    $cat = \App\Models\Category::find($menuItem['category_id']);
+                                @endphp
+                                @if($cat)
+                                    <a href="{{ route('news.category', $cat->slug) }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
+                                @endif
+                            @elseif(isset($menuItem['type']) && $menuItem['type'] === 'url')
+                                <a href="{{ $menuItem['url'] ?? '#' }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
+                            @endif
+                        @endforeach
+                    @else
+                        @foreach($categories as $category)
+                            <a href="{{ route('news.category', $category->slug) }}" class="hover:text-red-700 transition">{{ $category->name }}</a>
+                        @endforeach
+                    @endif
                 </div>
 
                 <div class="flex items-center space-x-4">

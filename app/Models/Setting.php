@@ -9,4 +9,13 @@ class Setting extends Model
 {
     /** @use HasFactory<\Database\Factories\SettingFactory> */
     use HasFactory;
+
+    protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'main_menu' => 'array',
+        ];
+    }
 }

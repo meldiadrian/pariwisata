@@ -14,3 +14,4 @@ Route::get('/sitemap.xml', function () {
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/news/{slug}', [FrontendController::class, 'show'])->name('news.show');
 Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('news.category');
+Route::get('/page/{slug}', [FrontendController::class, 'page'])->name('page.show');

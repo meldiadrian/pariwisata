@@ -8,5 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Page extends Model
 {
     /** @use HasFactory<\Database\Factories\PageFactory> */
-    use HasFactory;
+    //use HasFactory;
+
+    protected $fillable = [
+        'title',
+        // tambahkan kolom lain yang boleh diisi
+        'content',
+        'slug',
+    ];
 }

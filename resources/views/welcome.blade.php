@@ -80,9 +80,7 @@
         <!-- Sidebar Widgets -->
         <div class="lg:col-span-1 space-y-12">
             <!-- Ad Widget -->
-            <div class="bg-gray-200 h-64 flex items-center justify-center text-gray-400 text-xs rounded-lg border-2 border-dashed border-gray-300">
-                IKLAN BANNER
-            </div>
+            @include('partials._sidebar_ads')
 
             <!-- Categories Widget -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
