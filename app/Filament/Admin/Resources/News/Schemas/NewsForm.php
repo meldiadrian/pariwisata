@@ -16,6 +16,8 @@ use Filament\Schemas\Components\Grid;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\User;
+use App\Support\WebpUploadHelper;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class NewsForm
 {
@@ -55,7 +57,11 @@ class NewsForm
                     ->components([
                         FileUpload::make('thumbnail')
                             ->image()
-                            ->directory('news-thumbnails'),
+                            ->directory('news-thumbnails')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
+                                return WebpUploadHelper::convertAndStore($file, 'news-thumbnails');
+                            }),
                         TextInput::make('video_url')
                             ->url()
                             ->label('YouTube URL'),

@@ -108,4 +108,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Gallery Section -->
+    <div id="galeri" class="mt-16 mb-8 flex flex-col items-center" x-data="{ filter: 'all' }">
+        <h3 class="text-4xl font-bold text-slate-900 mb-2">Galeri Kegiatan</h3>
+        <p class="text-slate-500 mb-8 text-lg">Momen pelayanan dan kegiatan kami</p>
+        
+        <div class="inline-flex bg-slate-100 p-1.5 rounded-full mb-10 shadow-sm">
+            <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Semua</button>
+            <button @click="filter = 'photo'" :class="filter === 'photo' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Foto</button>
+            <button @click="filter = 'video'" :class="filter === 'video' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Video</button>
+        </div>
+        
+        @if($galleries->count() > 0)
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+            @foreach($galleries as $gallery)
+            <div x-show="filter === 'all' || filter === '{{ $gallery->video_url ? 'video' : 'photo' }}'" class="group block relative overflow-hidden rounded-xl shadow-sm aspect-square bg-gray-100 transition-all duration-300">
+                @if($gallery->video_url)
+                    @if($gallery->image)
+                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                            <i class="fas fa-play-circle text-4xl text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4 pointer-events-none">
+                            <h4 class="text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition duration-300">{{ $gallery->title }}</h4>
+                        </div>
+                        <a href="{{ $gallery->video_url }}" target="_blank" class="absolute inset-0 z-10"></a>
+                    @else
+                        <iframe src="{{ $gallery->video_url }}" class="w-full h-full object-cover" frameborder="0" allowfullscreen></iframe>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4 pointer-events-none">
+                            <h4 class="text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition duration-300">{{ $gallery->title }}</h4>
+                        </div>
+                    @endif
+                @else
+                    <a href="{{ asset('storage/' . $gallery->image) }}" target="_blank" class="block w-full h-full">
+                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4">
+                            <h4 class="text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition duration-300">{{ $gallery->title }}</h4>
+                        </div>
+                    </a>
+                @endif
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-xl border border-gray-100 w-full">
+            <i class="far fa-images text-4xl mb-3 text-gray-300"></i>
+            <p>Belum ada foto/video galeri.</p>
+        </div>
+        @endif
+    </div>
 @endsection

@@ -8,6 +8,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use App\Support\WebpUploadHelper;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class AdvertisementForm
 {
@@ -20,6 +22,10 @@ class AdvertisementForm
                 FileUpload::make('image')
                     ->image()
                     ->directory('ads')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
+                        return WebpUploadHelper::convertAndStore($file, 'ads');
+                    })
                     ->required(),
                 TextInput::make('url')
                     ->url(),

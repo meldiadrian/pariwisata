@@ -30,8 +30,29 @@ class FrontendController extends Controller
         $breaking = News::where('is_breaking', true)->where('status', 'publish')->latest()->first();
         $latestNews = News::where('status', 'publish')->latest()->paginate(10);
         $sidebarAds = $this->sidebarAds();
+        $photoGalleries = \App\Models\PhotoGallery::latest()->take(8)->get();
+        $videoGalleries = \App\Models\Video::latest()->take(8)->get();
+        
+        $galleries = collect();
+        foreach($photoGalleries as $photo) {
+            $galleries->push((object)[
+                'title' => $photo->title,
+                'image' => $photo->image,
+                'video_url' => $photo->video_url ?? null, // Use the one we added if it exists
+                'created_at' => $photo->created_at,
+            ]);
+        }
+        foreach($videoGalleries as $video) {
+            $galleries->push((object)[
+                'title' => $video->title,
+                'image' => $video->thumbnail ?? null,
+                'video_url' => $video->youtube_url,
+                'created_at' => $video->created_at,
+            ]);
+        }
+        $galleries = $galleries->sortByDesc('created_at')->take(8);
 
-        return view('welcome', compact('setting', 'categories', 'headlines', 'trending', 'breaking', 'latestNews', 'sidebarAds'));
+        return view('welcome', compact('setting', 'categories', 'headlines', 'trending', 'breaking', 'latestNews', 'sidebarAds', 'galleries'));
     }
 
     public function show($slug)

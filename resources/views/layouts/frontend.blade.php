@@ -7,12 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 300) ? true : false">
 
     <!-- Topbar -->
     <div class="bg-red-700 text-white py-2 text-sm">
@@ -68,6 +69,7 @@
                             <a href="{{ route('news.category', $category->slug) }}" class="hover:text-red-700 transition">{{ $category->name }}</a>
                         @endforeach
                     @endif
+                    <a href="{{ url('/') }}#galeri" class="hover:text-red-700 transition">Galeri</a>
                 </div>
 
                 <div class="flex items-center space-x-4">
@@ -125,6 +127,11 @@
             </div>
         </div>
     </footer>
+
+    <!-- Go Up Button -->
+    <button x-show="scrolled" x-transition @click="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-8 right-8 bg-red-700 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-red-800 transition-colors z-50">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>

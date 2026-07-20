@@ -6,6 +6,8 @@ use Filament\Schemas\Schema;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use App\Support\WebpUploadHelper;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class VideoForm
 {
@@ -20,7 +22,11 @@ class VideoForm
                     ->required(),
                 FileUpload::make('thumbnail')
                     ->image()
-                    ->directory('videos'),
+                    ->directory('videos')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
+                        return WebpUploadHelper::convertAndStore($file, 'videos');
+                    }),
             ]);
     }
 }
