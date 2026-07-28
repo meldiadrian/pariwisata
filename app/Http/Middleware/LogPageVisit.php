@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\ActivityLog;
+use App\Services\ThreatDetectionService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,7 @@ class LogPageVisit
 {
     /**
      * Handle an incoming request.
-     * Logs a 'page_visit' activity for every web request.
+     * Logs page visits, detects admin probing, and triggers threat analysis.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -23,13 +24,32 @@ class LogPageVisit
             && $request->method() === 'GET';
 
         if ($isPageRequest) {
+            $ip       = $request->ip();
+            $userId   = auth()->id();
+            $url      = $request->fullUrl();
+            $activity = 'page_visit';
+
+            // Detect unauthenticated access to /admin routes
+            $isAdminProbe = str_contains($url, '/admin')
+                && !$userId
+                && !str_contains($url, '/admin/login');
+
+            if ($isAdminProbe) {
+                $activity = 'admin_probe';
+            }
+
             ActivityLog::create([
-                'user_id'    => auth()->id(),
-                'activity'   => 'page_visit',
-                'url'        => $request->fullUrl(),
-                'ip_address' => $request->ip(),
+                'user_id'    => $userId,
+                'activity'   => $activity,
+                'url'        => $url,
+                'ip_address' => $ip,
                 'user_agent' => $request->userAgent(),
             ]);
+
+            // Run threat analysis for every request (brute force, rate abuse, admin probe)
+            if ($isAdminProbe || $activity === 'page_visit') {
+                app(ThreatDetectionService::class)->analyse($ip, $userId);
+            }
         }
 
         return $response;

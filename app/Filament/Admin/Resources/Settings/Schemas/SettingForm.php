@@ -21,6 +21,10 @@ class SettingForm
                     ->components([
                         TextInput::make('site_name')
                             ->required(),
+                        TextInput::make('tagline')
+                            ->label('Tagline / Subtitle')
+                            ->placeholder('Contoh: Kabupaten Bengkalis')
+                            ->helperText('Ditampilkan di bawah nama instansi pada header website.'),
                         FileUpload::make('logo')
                             ->image()
                             ->directory('settings')

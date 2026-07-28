@@ -18,7 +18,7 @@ class PhotoGalleryResource extends Resource
 {
     protected static ?string $model = PhotoGallery::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCamera;
 
     public static function form(Schema $schema): Schema
     {

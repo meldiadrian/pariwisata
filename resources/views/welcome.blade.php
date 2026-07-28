@@ -46,6 +46,55 @@
         </div>
     </div>
 
+    <!-- Banner Sliders -->
+    @if($sliders->count() > 0)
+    <div class="mb-12 rounded-xl overflow-hidden shadow-sm relative group">
+        <div class="swiper banner-swiper">
+            <div class="swiper-wrapper">
+                @foreach($sliders as $slider)
+                <div class="swiper-slide">
+                    @if($slider->url)
+                        <a href="{{ $slider->url }}" target="_blank">
+                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto max-h-[300px] object-cover">
+                        </a>
+                    @else
+                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto max-h-[300px] object-cover">
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+            <!-- Add Navigation -->
+            <div class="swiper-button-next text-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="swiper-button-prev text-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+    </div>
+
+    <!-- Initialize Banner Swiper -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Swiper !== 'undefined') {
+                new Swiper('.banner-swiper', {
+                    loop: true,
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.banner-swiper .swiper-button-next',
+                        prevEl: '.banner-swiper .swiper-button-prev',
+                    },
+                });
+            }
+        });
+    </script>
+    @endif
+
     <!-- Latest News Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
@@ -109,6 +158,79 @@
         </div>
     </div>
 
+    <!-- Festival Section -->
+    @if($festivals->count() > 0)
+    <div id="festival" class="mt-16 mb-12" x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '' }">
+        <div class="text-center mb-10">
+            <h3 class="text-4xl font-bold text-slate-900 mb-2">Festival & Kegiatan</h3>
+            <p class="text-slate-500 text-lg">Event dan kegiatan terbaru kami</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach($festivals as $festival)
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden
+                        hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                {{-- Poster Image --}}
+                <div class="relative overflow-hidden aspect-square bg-gray-100 cursor-pointer"
+                     @click="lightboxOpen = true; lightboxImage = '{{ asset('storage/' . $festival->image) }}'; lightboxTitle = '{{ addslashes($festival->title) }}'">
+                    @if($festival->image)
+                        <img src="{{ asset('storage/' . $festival->image) }}"
+                             alt="{{ $festival->title }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                            <i class="fas fa-search-plus text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></i>
+                        </div>
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+                            <i class="fas fa-image text-5xl text-red-200"></i>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Card Info --}}
+                <div class="p-5 text-center">
+                    <h4 class="font-bold text-gray-800 text-lg leading-snug mb-2">
+                        {{ $festival->title }}
+                    </h4>
+                    @if($festival->event_date)
+                        <p class="text-sm font-medium text-blue-400">
+                            {{ $festival->event_date->translatedFormat('d M Y') }}
+                        </p>
+                    @endif
+                    @if($festival->description)
+                        <p class="text-xs text-gray-400 mt-2 line-clamp-2">{{ $festival->description }}</p>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Lightbox Modal --}}
+        <div x-show="lightboxOpen" style="display: none;"
+             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            
+            <div class="relative max-w-5xl w-full h-full flex flex-col items-center justify-center" @click.away="lightboxOpen = false">
+                {{-- Close Button --}}
+                <button @click="lightboxOpen = false" class="absolute top-4 right-4 text-white/70 hover:text-white z-10 focus:outline-none">
+                    <i class="fas fa-times text-4xl"></i>
+                </button>
+                
+                {{-- Full Image --}}
+                <img :src="lightboxImage" :alt="lightboxTitle" class="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-sm">
+                
+                {{-- Title --}}
+                <h4 x-text="lightboxTitle" class="text-white text-xl font-bold mt-4 text-center"></h4>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Gallery Section -->
     <div id="galeri" class="mt-16 mb-8 flex flex-col items-center" x-data="{ filter: 'all' }">
         <h3 class="text-4xl font-bold text-slate-900 mb-2">Galeri Kegiatan</h3>
@@ -158,4 +280,4 @@
         </div>
         @endif
     </div>
-@endsection
+@endsection 

@@ -1,17 +1,22 @@
 @if(isset($sidebarAds) && $sidebarAds->isNotEmpty())
     @foreach($sidebarAds as $ad)
-    <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100">
-        @if($ad->url)
-            <a href="{{ $ad->url }}" target="_blank" rel="noopener noreferrer" title="{{ $ad->title }}">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        @if($ad->title)
+            <h3 class="font-bold mb-4 border-l-4 border-red-700 pl-3 uppercase">{{ $ad->title }}</h3>
+        @endif
+        <div class="rounded-lg overflow-hidden">
+            @if($ad->url)
+                <a href="{{ $ad->url }}" target="_blank" rel="noopener noreferrer" title="{{ $ad->title }}">
+                    <img src="{{ asset('storage/' . $ad->image) }}"
+                         alt="{{ $ad->title }}"
+                         class="w-full h-auto object-cover hover:opacity-90 transition duration-300">
+                </a>
+            @else
                 <img src="{{ asset('storage/' . $ad->image) }}"
                      alt="{{ $ad->title }}"
-                     class="w-full h-auto object-cover hover:opacity-90 transition duration-300">
-            </a>
-        @else
-            <img src="{{ asset('storage/' . $ad->image) }}"
-                 alt="{{ $ad->title }}"
-                 class="w-full h-auto object-cover">
-        @endif
+                     class="w-full h-auto object-cover">
+            @endif
+        </div>
     </div>
     @endforeach
 @endif

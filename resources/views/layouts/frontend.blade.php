@@ -36,47 +36,273 @@
     </div>
 
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <a href="{{ route('home') }}" class="text-3xl font-black text-red-700 tracking-tighter">
-                    {{ $setting->site_name ?? 'NEWS' }}<span class="text-gray-900">PORTAL</span>
+            <div class="flex justify-between items-center py-3">
+                {{-- ── Logo & Site Identity ────────────────────────── --}}
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
+                    @if(!empty($setting->logo))
+                        <img src="{{ asset('storage/' . $setting->logo) }}"
+                             alt="{{ $setting->site_name ?? 'Logo' }}"
+                             class="h-14 w-14 object-contain flex-shrink-0
+                                    drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
+                    @else
+                        {{-- Fallback emblem when no logo is set --}}
+                        <div class="h-14 w-14 rounded-full bg-gradient-to-br from-red-600 to-red-800
+                                    flex items-center justify-center flex-shrink-0 shadow
+                                    group-hover:scale-105 transition-transform duration-200">
+                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                    @endif
+
+                    <div class="leading-tight">
+                        <div class="text-xl font-extrabold tracking-wide text-red-700 uppercase leading-none">
+                            {{ $setting->site_name ?? 'PORTAL BERITA' }}
+                        </div>
+                        @if(!empty($setting->tagline ?? $setting->address))
+                            <div class="text-xs font-medium text-gray-500 mt-0.5 leading-snug">
+                                {{ $setting->tagline ?? \Illuminate\Support\Str::words($setting->address ?? '', 4, '') }}
+                            </div>
+                        @else
+                            <div class="text-xs font-medium text-gray-500 mt-0.5">Portal Berita Terpercaya</div>
+                        @endif
+                    </div>
                 </a>
-                
-                <div class="hidden lg:flex space-x-6 font-semibold uppercase text-sm">
+
+                {{-- ── Desktop Navigation ─────────────────────────────── --}}
+                <nav class="hidden lg:flex items-center space-x-1 font-semibold uppercase text-sm">
+                    @php
+                        /**
+                         * Helper closure: resolve a menu item's URL based on its type.
+                         */
+                        $resolveUrl = function (array $item) use (&$resolveUrl): ?string {
+                            return match ($item['type'] ?? null) {
+                                'page'     => ($p = \App\Models\Page::find($item['page_id'] ?? null))
+                                                ? route('page.show', $p->slug) : null,
+                                'category' => ($c = \App\Models\Category::find($item['category_id'] ?? null))
+                                                ? route('news.category', $c->slug) : null,
+                                'festival' => url('/') . '#festival',
+                                'url'      => $item['url'] ?? '#',
+                                default    => '#',
+                            };
+                        };
+                    @endphp
+
                     @if(!empty($setting->main_menu) && is_array($setting->main_menu))
                         @foreach($setting->main_menu as $menuItem)
-                            @if(isset($menuItem['type']) && $menuItem['type'] === 'page' && !empty($menuItem['page_id']))
-                                @php
-                                    $page = \App\Models\Page::find($menuItem['page_id']);
-                                @endphp
-                                @if($page)
-                                    <a href="{{ route('page.show', $page->slug) }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
+                            @php
+                                $hasChildren  = !empty($menuItem['children']) && is_array($menuItem['children']);
+                                $level1Url    = $resolveUrl($menuItem);
+                            @endphp
+
+                            @if($hasChildren)
+                                {{-- Level 1 with Dropdown --}}
+                                <div class="relative" x-data="{ open: false }"
+                                     @mouseenter="open = true" @mouseleave="open = false">
+
+                                    <button @click="open = !open"
+                                            class="flex items-center gap-1 px-3 py-2 rounded hover:text-red-700 transition focus:outline-none">
+                                        {{ $menuItem['label'] }}
+                                        <svg class="w-3 h-3 transition-transform duration-200"
+                                             :class="{ 'rotate-180': open }"
+                                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    {{-- Level 2 Dropdown --}}
+                                    <div x-show="open" x-transition:enter="transition ease-out duration-150"
+                                         x-transition:enter-start="opacity-0 translate-y-1"
+                                         x-transition:enter-end="opacity-100 translate-y-0"
+                                         x-transition:leave="transition ease-in duration-100"
+                                         x-transition:leave-start="opacity-100 translate-y-0"
+                                         x-transition:leave-end="opacity-0 translate-y-1"
+                                         class="absolute top-full left-0 mt-1 w-52 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50"
+                                         style="display:none;">
+                                        @foreach($menuItem['children'] as $subItem)
+                                            @php
+                                                $hasSubChildren = !empty($subItem['children']) && is_array($subItem['children']);
+                                                $level2Url      = $resolveUrl($subItem);
+                                            @endphp
+
+                                            @if($hasSubChildren)
+                                                {{-- Level 2 item with flyout --}}
+                                                <div class="relative group/sub" x-data="{ subOpen: false }"
+                                                     @mouseenter="subOpen = true" @mouseleave="subOpen = false">
+
+                                                    <button @click="subOpen = !subOpen"
+                                                            class="w-full flex items-center justify-between px-4 py-2 text-sm normal-case font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition">
+                                                        {{ $subItem['label'] }}
+                                                        <svg class="w-3 h-3 -rotate-90" fill="none" viewBox="0 0 24 24"
+                                                             stroke="currentColor" stroke-width="2.5">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                                        </svg>
+                                                    </button>
+
+                                                    {{-- Level 3 Flyout --}}
+                                                    <div x-show="subOpen"
+                                                         x-transition:enter="transition ease-out duration-150"
+                                                         x-transition:enter-start="opacity-0 -translate-x-1"
+                                                         x-transition:enter-end="opacity-100 translate-x-0"
+                                                         x-transition:leave="transition ease-in duration-100"
+                                                         x-transition:leave-start="opacity-100 translate-x-0"
+                                                         x-transition:leave-end="opacity-0 -translate-x-1"
+                                                         class="absolute top-0 left-full ml-1 w-52 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50"
+                                                         style="display:none;">
+                                                        @foreach($subItem['children'] as $subSubItem)
+                                                            @php $level3Url = $resolveUrl($subSubItem); @endphp
+                                                            @if($level3Url)
+                                                                <a href="{{ $level3Url }}"
+                                                                   class="block px-4 py-2 text-sm normal-case font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition">
+                                                                    {{ $subSubItem['label'] }}
+                                                                </a>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @else
+                                                {{-- Level 2 plain link --}}
+                                                @if($level2Url)
+                                                    <a href="{{ $level2Url }}"
+                                                       class="block px-4 py-2 text-sm normal-case font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition">
+                                                        {{ $subItem['label'] }}
+                                                    </a>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @else
+                                {{-- Level 1 plain link --}}
+                                @if($level1Url)
+                                    <a href="{{ $level1Url }}"
+                                       class="px-3 py-2 rounded hover:text-red-700 transition">
+                                        {{ $menuItem['label'] }}
+                                    </a>
                                 @endif
-                            @elseif(isset($menuItem['type']) && $menuItem['type'] === 'category' && !empty($menuItem['category_id']))
-                                @php
-                                    $cat = \App\Models\Category::find($menuItem['category_id']);
-                                @endphp
-                                @if($cat)
-                                    <a href="{{ route('news.category', $cat->slug) }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
-                                @endif
-                            @elseif(isset($menuItem['type']) && $menuItem['type'] === 'url')
-                                <a href="{{ $menuItem['url'] ?? '#' }}" class="hover:text-red-700 transition">{{ $menuItem['label'] }}</a>
                             @endif
                         @endforeach
                     @else
                         @foreach($categories as $category)
-                            <a href="{{ route('news.category', $category->slug) }}" class="hover:text-red-700 transition">{{ $category->name }}</a>
+                            <a href="{{ route('news.category', $category->slug) }}"
+                               class="px-3 py-2 rounded hover:text-red-700 transition">
+                                {{ $category->name }}
+                            </a>
                         @endforeach
                     @endif
-                    <a href="{{ url('/') }}#galeri" class="hover:text-red-700 transition">Galeri</a>
-                </div>
+
+                    <a href="{{ url('/') }}#galeri" class="px-3 py-2 rounded hover:text-red-700 transition">Galeri</a>
+                </nav>
 
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-600 hover:text-red-700"><i class="fas fa-search"></i></button>
                     <a href="/admin" class="bg-gray-900 text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-red-700 transition">Login</a>
+                    {{-- Mobile hamburger --}}
+                    <button @click="mobileOpen = !mobileOpen"
+                            class="lg:hidden text-gray-600 hover:text-red-700 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round"
+                                  d="M4 6h16M4 12h16M4 18h16" />
+                            <path x-show="mobileOpen" stroke-linecap="round" stroke-linejoin="round"
+                                  d="M6 18L18 6M6 6l12 12" style="display:none;" />
+                        </svg>
+                    </button>
                 </div>
             </div>
+
+            {{-- ── Mobile Navigation ─────────────────────────────────── --}}
+            <nav x-show="mobileOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 class="lg:hidden border-t border-gray-100 py-3 space-y-1"
+                 style="display:none;">
+
+                @if(!empty($setting->main_menu) && is_array($setting->main_menu))
+                    @foreach($setting->main_menu as $menuItem)
+                        @php
+                            $hasChildren = !empty($menuItem['children']) && is_array($menuItem['children']);
+                            $level1Url   = $resolveUrl($menuItem);
+                        @endphp
+
+                        @if($hasChildren)
+                            <div x-data="{ open: false }">
+                                <button @click="open = !open"
+                                        class="w-full flex justify-between items-center px-4 py-2 font-semibold uppercase text-sm text-gray-700 hover:text-red-700 transition">
+                                    {{ $menuItem['label'] }}
+                                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }"
+                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div x-show="open" class="pl-4 space-y-1" style="display:none;">
+                                    @foreach($menuItem['children'] as $subItem)
+                                        @php
+                                            $hasSubChildren = !empty($subItem['children']) && is_array($subItem['children']);
+                                            $level2Url      = $resolveUrl($subItem);
+                                        @endphp
+
+                                        @if($hasSubChildren)
+                                            <div x-data="{ subOpen: false }">
+                                                <button @click="subOpen = !subOpen"
+                                                        class="w-full flex justify-between items-center px-4 py-2 text-sm text-gray-600 hover:text-red-700 transition">
+                                                    {{ $subItem['label'] }}
+                                                    <svg class="w-3 h-3 transition-transform" :class="{ 'rotate-180': subOpen }"
+                                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                                <div x-show="subOpen" class="pl-4 space-y-1" style="display:none;">
+                                                    @foreach($subItem['children'] as $subSubItem)
+                                                        @php $level3Url = $resolveUrl($subSubItem); @endphp
+                                                        @if($level3Url)
+                                                            <a href="{{ $level3Url }}"
+                                                               class="block px-4 py-2 text-xs text-gray-500 hover:text-red-700 transition">
+                                                                {{ $subSubItem['label'] }}
+                                                            </a>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @else
+                                            @if($level2Url)
+                                                <a href="{{ $level2Url }}"
+                                                   class="block px-4 py-2 text-sm text-gray-600 hover:text-red-700 transition">
+                                                    {{ $subItem['label'] }}
+                                                </a>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            @if($level1Url)
+                                <a href="{{ $level1Url }}"
+                                   class="block px-4 py-2 font-semibold uppercase text-sm text-gray-700 hover:text-red-700 transition">
+                                    {{ $menuItem['label'] }}
+                                </a>
+                            @endif
+                        @endif
+                    @endforeach
+                @else
+                    @foreach($categories as $category)
+                        <a href="{{ route('news.category', $category->slug) }}"
+                           class="block px-4 py-2 font-semibold uppercase text-sm text-gray-700 hover:text-red-700 transition">
+                            {{ $category->name }}
+                        </a>
+                    @endforeach
+                @endif
+
+                <a href="{{ url('/') }}#galeri"
+                   class="block px-4 py-2 font-semibold uppercase text-sm text-gray-700 hover:text-red-700 transition">
+                    Galeri
+                </a>
+            </nav>
         </div>
     </header>
 

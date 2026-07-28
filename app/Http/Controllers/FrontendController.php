@@ -8,6 +8,8 @@ use App\Models\News;
 use App\Models\Category;
 use App\Models\Setting;
 use App\Models\Advertisement;
+use App\Models\Festival;
+use App\Models\Slider;
 
 class FrontendController extends Controller
 {
@@ -52,7 +54,10 @@ class FrontendController extends Controller
         }
         $galleries = $galleries->sortByDesc('created_at')->take(8);
 
-        return view('welcome', compact('setting', 'categories', 'headlines', 'trending', 'breaking', 'latestNews', 'sidebarAds', 'galleries'));
+        $festivals = Festival::where('is_active', true)->orderBy('order')->latest()->get();
+        $sliders = Slider::where('is_active', true)->orderBy('order')->get();
+
+        return view('welcome', compact('setting', 'categories', 'headlines', 'trending', 'breaking', 'latestNews', 'sidebarAds', 'galleries', 'festivals', 'sliders'));
     }
 
     public function show($slug)

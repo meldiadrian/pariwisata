@@ -15,6 +15,7 @@ class ActivityLog extends Model
     protected $fillable = [
         'user_id',
         'activity',
+        'threat_level',
         'url',
         'ip_address',
         'user_agent',
