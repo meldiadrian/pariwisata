@@ -18,3 +18,8 @@ Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('n
 Route::get('/page/{slug}', [FrontendController::class, 'page'])->name('page.show');
 
 Route::get('/user/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Block direct access to livewire-tmp folder
+Route::any('storage/livewire-tmp/{path?}', function () {
+    abort(403, 'Access denied');
+})->where('path', '.*');

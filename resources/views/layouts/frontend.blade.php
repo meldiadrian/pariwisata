@@ -316,12 +316,13 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-gray-800 pb-8">
                 <div class="col-span-1 md:col-span-1">
                     <h2 class="text-sm font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
-                    <p class="text-gray-400 text-sm mb-4">{{ $setting->about_us ?? '' }}</p>
-                    <div class="flex space-x-4">
+                    <p class="text-gray-400 text-sm mb-4">{{ 'Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
+' }}</p>
+                    <!-- <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
-                    </div>
+                    </div> -->
                 </div>
                 <div>
                     <h3 class="font-bold mb-4 uppercase">Kategori</h3>
@@ -334,22 +335,34 @@
                 <div>
                     <h3 class="font-bold mb-4 uppercase">Informasi</h3>
                     <ul class="text-gray-400 text-sm space-y-2">
-                        <li><a href="#" class="hover:text-white">Tentang Kami</a></li>
+                        <li><a href="{{ route('page.show', 'profil-lembaga') }}" class="hover:text-white">Tentang Kami</a></li>
                         <li><a href="#" class="hover:text-white">Kontak</a></li>
                         <li><a href="#" class="hover:text-white">Kebijakan Privasi</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="font-bold mb-4 uppercase">Newsletter</h3>
-                    <p class="text-gray-400 text-xs mb-4">Dapatkan berita terbaru langsung di email Anda.</p>
-                    <form class="flex">
-                        <input type="email" placeholder="Email Anda" class="bg-gray-800 border-none rounded-l px-3 py-2 w-full text-sm">
-                        <button class="bg-red-700 px-4 py-2 rounded-r hover:bg-red-600 transition">Daftar</button>
-                    </form>
+                    <h3 class="font-bold mb-4 uppercase">Kontak</h3>
+                     <ul class="text-gray-400 text-sm space-y-2">
+                        <li>Jl. Arif Rahman No.24, Bengkalis Kota,<br></li>
+                        <li>Kabupaten Bengkalis,Riau 28713<br></li>
+                        <li>Telp : 076622720</li>
+                    </ul>
+                    <div class="rounded-2xl overflow-hidden shadow-xl">
+                        <iframe
+        class="rounded-xl w-full h-[150px]"
+        src="https://www.google.com/maps?q=Jl.+Arif+Rahman+No.24,+Bengkalis+Kota,+Kec.+Bengkalis,+Kabupaten+Bengkalis,+Riau+28713&output=embed"
+        loading="lazy"
+        allowfullscreen>
+    </iframe>
+                    </div>
+              
+    
+</div>
                 </div>
             </div>
             <div class="text-center text-gray-500 text-xs">
                 &copy; {{ date('Y') }} {{ $setting->site_name ?? 'News Portal' }}. All rights reserved.
+                <br>Dikembangkan oleh TIM IT Diskominfotik Kab. Bengkalis
             </div>
         </div>
     </footer>

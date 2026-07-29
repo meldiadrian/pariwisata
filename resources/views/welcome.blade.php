@@ -79,7 +79,7 @@
             }
         }"
          @keydown.escape.window="closeLightbox()"
-         class="mb-12">
+         class="container mx-auto mb-12 bg-gray-100 py-8 rounded-xl">
 
         
 
@@ -353,16 +353,16 @@
     <!-- Banner Sliders -->
     @if($sliders->count() > 0)
     <div class="mb-12 rounded-xl overflow-hidden shadow-sm relative group">
-        <div class="swiper banner-swiper h-[220px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]">
+        <div class="swiper banner-swiper">
             <div class="swiper-wrapper">
                 @foreach($sliders as $slider)
                 <div class="swiper-slide">
                     @if($slider->url)
-                        <a href="{{ $slider->url }}" target="_blank" class="block w-full h-full">
-                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
+                        <a href="{{ $slider->url }}" target="_blank" class="block w-full">
+                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto">
                         </a>
                     @else
-                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto">
                     @endif
                 </div>
                 @endforeach
@@ -381,6 +381,7 @@
             if (typeof Swiper !== 'undefined') {
                 new Swiper('.banner-swiper', {
                     loop: true,
+                    autoHeight: true,
                     autoplay: {
                         delay: 5000,
                         disableOnInteraction: false,
@@ -451,7 +452,7 @@
             </div>
 
             <!-- Tags Widget -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <!--<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="font-bold mb-4 border-l-4 border-red-700 pl-3">TAG POPULER</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach(\App\Models\Tag::take(10)->get() as $tag)
@@ -460,7 +461,7 @@
                     </a>
                     @endforeach
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 

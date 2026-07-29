@@ -18,6 +18,14 @@
 /public/storage
 /storage/*.key
 /storage/pail
+
+# Ignore livewire temporary uploads (except protection files)
+/storage/app/public/livewire-tmp/*
+!/storage/app/public/livewire-tmp/.htaccess
+!/storage/app/public/livewire-tmp/web.config
+!/storage/app/public/livewire-tmp/index.php
+!/storage/app/public/livewire-tmp/README.md
+
 /vendor
 Homestead.json
 Homestead.yaml
