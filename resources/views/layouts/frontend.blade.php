@@ -58,7 +58,7 @@
                     @endif
 
                     <div class="leading-tight">
-                        <div class="text-xl font-extrabold tracking-wide text-red-700 uppercase leading-none">
+                        <div class="text-2xl font-extrabold tracking-wide text-red-700  leading-none">
                             {{ $setting->site_name ?? 'PORTAL BERITA' }}
                         </div>
                         @if(!empty($setting->tagline ?? $setting->address))
@@ -197,7 +197,7 @@
                 </nav>
 
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-red-700"><i class="fas fa-search"></i></button>
+                    <button class="text-gray-600 hover:text-red-700"><i class="x-search"></i></button>
                     <a href="/admin" class="bg-gray-900 text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-red-700 transition">Login</a>
                     {{-- Mobile hamburger --}}
                     <button @click="mobileOpen = !mobileOpen"
@@ -315,7 +315,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-gray-800 pb-8">
                 <div class="col-span-1 md:col-span-1">
-                    <h2 class="text-2xl font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
+                    <h2 class="text-sm font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
                     <p class="text-gray-400 text-sm mb-4">{{ $setting->about_us ?? '' }}</p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>

@@ -10,6 +10,7 @@ use App\Models\Setting;
 use App\Models\Advertisement;
 use App\Models\Festival;
 use App\Models\Slider;
+use App\Models\DestinationCategory;
 
 class FrontendController extends Controller
 {
@@ -40,7 +41,7 @@ class FrontendController extends Controller
             $galleries->push((object)[
                 'title' => $photo->title,
                 'image' => $photo->image,
-                'video_url' => $photo->video_url ?? null, // Use the one we added if it exists
+                'video_url' => $photo->video_url ?? null,
                 'created_at' => $photo->created_at,
             ]);
         }
@@ -57,7 +58,19 @@ class FrontendController extends Controller
         $festivals = Festival::where('is_active', true)->orderBy('order')->latest()->get();
         $sliders = Slider::where('is_active', true)->orderBy('order')->get();
 
-        return view('welcome', compact('setting', 'categories', 'headlines', 'trending', 'breaking', 'latestNews', 'sidebarAds', 'galleries', 'festivals', 'sliders'));
+        // Destination categories with their active destinations (for the tourism icon menu)
+        $destinationCategories = DestinationCategory::where('is_active', true)
+            ->orderBy('order')
+            ->with(['destinations' => function ($q) {
+                $q->where('is_active', true)->orderBy('order');
+            }])
+            ->get();
+
+        return view('welcome', compact(
+            'setting', 'categories', 'headlines', 'trending', 'breaking',
+            'latestNews', 'sidebarAds', 'galleries', 'festivals', 'sliders',
+            'destinationCategories'
+        ));
     }
 
     public function show($slug)

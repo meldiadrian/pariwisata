@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Tags\Pages;
+namespace App\Filament\Admin\Resources\Destinations\Pages;
 
-use App\Filament\Admin\Resources\Tags\TagResource;
+use App\Filament\Admin\Resources\Destinations\DestinationResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditTag extends EditRecord
+class EditDestination extends EditRecord
 {
-    protected static string $resource = TagResource::class;
+    protected static string $resource = DestinationResource::class;
 
     protected function getHeaderActions(): array
     {

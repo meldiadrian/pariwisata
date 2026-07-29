@@ -1,6 +1,8 @@
 @extends('layouts.frontend')
 
 @section('content')
+    
+
     <!-- Hero Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
         <!-- Main Slider -->
@@ -46,19 +48,321 @@
         </div>
     </div>
 
+
+ <!-- Tourism Menu Section -->
+    @if($destinationCategories->count() > 0)
+    <div x-data="{
+            activeTab: null,
+            search: '',
+            lightbox: false,
+            lightboxImg: '',
+            lightboxTitle: '',
+            lightboxDesc: '',
+            lightboxCat: '',
+            matchSearch(el) {
+                if (!this.search.trim()) return true;
+                const q = this.search.toLowerCase().trim();
+                const text = (el.dataset.searchtext || '').toLowerCase();
+                return text.includes(q);
+            },
+            openLightbox(img, title, desc, cat) {
+                this.lightboxImg = img;
+                this.lightboxTitle = title;
+                this.lightboxDesc = desc;
+                this.lightboxCat = cat;
+                this.lightbox = true;
+                document.body.style.overflow = 'hidden';
+            },
+            closeLightbox() {
+                this.lightbox = false;
+                document.body.style.overflow = '';
+            }
+        }"
+         @keydown.escape.window="closeLightbox()"
+         class="mb-12">
+
+        
+
+        <!-- Icon Category Menu -->
+        <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center overflow-x-auto gap-4 md:gap-8 pb-4 scrollbar-hide mb-8">
+            @foreach($destinationCategories as $destCat)
+            <button
+                @click="activeTab = (activeTab === '{{ $destCat->slug }}' ? null : '{{ $destCat->slug }}')"
+                class="flex flex-col items-center min-w-[90px] pt-3 group focus:outline-none shrink-0">
+                <div
+                    :class="activeTab === '{{ $destCat->slug }}'
+                        ? 'bg-red-100 text-red-700 ring-2 ring-red-500 scale-110'
+                        : 'bg-red-50 text-red-600 group-hover:bg-red-100 group-hover:scale-110'"
+                    class="flex items-center justify-center rounded-full mb-3 transition-all duration-300 flex-shrink-0"
+                    style="width: 64px; height: 64px; min-width: 64px; min-height: 64px;">
+                    <i class="{{ $destCat->icon_class }} text-2xl"></i>
+                </div>
+                <span
+                    :class="activeTab === '{{ $destCat->slug }}' ? 'text-red-700 font-semibold' : 'text-gray-700'"
+                    class="text-sm font-medium text-center leading-tight transition-colors duration-200">
+                    {{ $destCat->name }}
+                </span>
+            </button>
+            @endforeach
+        </div>
+
+        <!-- Destination Cards per Category -->
+
+        <!-- Placeholder: tampil saat belum ada kategori dipilih -->
+        <!-- <div x-show="activeTab === null"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="text-center py-14 select-none">
+            <div class="inline-flex items-center justify-center rounded-full bg-red-50 mb-5"
+                 style="width: 80px; height: 80px;">
+                <i class="fas fa-hand-pointer text-3xl text-red-300"></i>
+            </div>
+            <p class="text-gray-400 text-base font-medium">Pilih kategori di atas</p>
+            <p class="text-gray-300 text-sm mt-1">untuk melihat daftar destinasi wisata</p>
+        </div> -->
+
+        @foreach($destinationCategories as $destCat)
+        <div
+            x-show="activeTab === '{{ $destCat->slug }}'"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            style="display: none;"
+            x-init="$watch('search', () => {
+                const cards = $el.querySelectorAll('[data-card]');
+                let visible = 0;
+                cards.forEach(card => {
+                    const matches = matchSearch(card);
+                    card.style.display = matches ? '' : 'none';
+                    if (matches) visible++;
+                });
+                const noResult = $el.querySelector('[data-noresult]');
+                if (noResult) noResult.style.display = visible === 0 && search.trim() !== '' ? '' : 'none';
+            })">
+
+            @if($destCat->destinations->count() > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="grid-{{ $destCat->slug }}">
+                @foreach($destCat->destinations as $destination)
+                <div data-card
+                     data-searchtext="{{ strtolower($destination->name . ' ' . ($destination->address ?? '') . ' ' . ($destination->description ?? '') . ' ' . $destCat->name) }}"
+                     class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col group hover:-translate-y-1"
+                     style="transition: opacity 0.2s, transform 0.2s;">
+
+                    {{-- Destination Image (clickable lightbox) --}}
+                    <div class="relative h-48 overflow-hidden bg-gray-100">
+                        @if($destination->image)
+                            <button type="button"
+                                    @click="openLightbox(
+                                        '{{ asset('storage/' . $destination->image) }}',
+                                        '{{ addslashes($destination->name) }}',
+                                        '{{ addslashes($destination->description ?? '') }}',
+                                        '{{ addslashes($destCat->name) }}'
+                                    )"
+                                    class="w-full h-full block cursor-zoom-in focus:outline-none">
+                                <img src="{{ asset('storage/' . $destination->image) }}"
+                                     alt="{{ $destination->name }}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                {{-- Hover zoom hint --}}
+                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-all duration-300 flex items-center justify-center">
+                                    <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full w-10 h-10 flex items-center justify-center shadow">
+                                        <i class="fas fa-search-plus text-red-600 text-sm"></i>
+                                    </span>
+                                </div>
+                            </button>
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+                                <i class="fas fa-image text-5xl text-red-200"></i>
+                            </div>
+                        @endif
+                        {{-- Disparbudpora badge --}}
+                        <div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-red-700 flex items-center gap-1 shadow-sm z-10">
+                            @if(!empty($setting->logo))
+                                <img src="{{ asset('storage/' . $setting->logo) }}"
+                                     class="h-3.5 w-3.5 object-contain"
+                                     onerror="this.style.display='none'">
+                            @endif
+                            Disparbudpora
+                        </div>
+                    </div>
+
+                    {{-- Card Body --}}
+                    <div class="p-4 flex-1 flex flex-col">
+                        <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold mb-3 self-start">
+                            {{ $destCat->name }}
+                        </span>
+
+                        {{-- Clickable area: title + address + description --}}
+                        @if($destination->image)
+                        <button type="button"
+                                @click="openLightbox(
+                                    '{{ asset('storage/' . $destination->image) }}',
+                                    '{{ addslashes($destination->name) }}',
+                                    '{{ addslashes($destination->description ?? '') }}',
+                                    '{{ addslashes($destCat->name) }}'
+                                )"
+                                class="text-left focus:outline-none group/btn">
+                            <h4 class="font-bold text-gray-800 text-base leading-snug mb-1 group-hover:text-red-700 group-hover/btn:text-red-700 transition-colors duration-200 flex items-start gap-1">
+                                {{ $destination->name }}
+                                <i class="fas fa-expand-alt text-[10px] text-gray-300 group-hover/btn:text-red-400 transition-colors mt-1 shrink-0"></i>
+                            </h4>
+                            @if($destination->address)
+                                <p class="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                                    <i class="fas fa-map-marker-alt text-red-400 shrink-0"></i>
+                                    {{ $destination->address }}
+                                </p>
+                            @endif
+                            @if($destination->description)
+                                <p class="text-xs text-gray-500 line-clamp-2 mb-3 group-hover/btn:text-gray-700 transition-colors duration-200">{{ $destination->description }}</p>
+                            @endif
+                        </button>
+                        @else
+                        <h4 class="font-bold text-gray-800 text-base leading-snug mb-1 group-hover:text-red-700 transition-colors duration-200">
+                            {{ $destination->name }}
+                        </h4>
+                        @if($destination->address)
+                            <p class="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                                <i class="fas fa-map-marker-alt text-red-400 shrink-0"></i>
+                                {{ $destination->address }}
+                            </p>
+                        @endif
+                        @if($destination->description)
+                            <p class="text-xs text-gray-500 line-clamp-2 mb-3">{{ $destination->description }}</p>
+                        @endif
+                        @endif
+
+
+                        {{-- Social Media Links --}}
+                        <div class="mt-auto border-t border-gray-100 pt-3 flex gap-2">
+                            @if($destination->facebook_url)
+                                <a href="{{ $destination->facebook_url }}" target="_blank" rel="noopener"
+                                   class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-600 transition-all duration-200">
+                                    <i class="fab fa-facebook-f text-xs"></i>
+                                </a>
+                            @else
+                                <span class="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-200 cursor-default">
+                                    <i class="fab fa-facebook-f text-xs"></i>
+                                </span>
+                            @endif
+
+                            @if($destination->instagram_url)
+                                <a href="{{ $destination->instagram_url }}" target="_blank" rel="noopener"
+                                   class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:border-pink-600 transition-all duration-200">
+                                    <i class="fab fa-instagram text-xs"></i>
+                                </a>
+                            @else
+                                <span class="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-200 cursor-default">
+                                    <i class="fab fa-instagram text-xs"></i>
+                                </span>
+                            @endif
+
+                            @if($destination->youtube_url)
+                                <a href="{{ $destination->youtube_url }}" target="_blank" rel="noopener"
+                                   class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-600 hover:border-red-600 transition-all duration-200">
+                                    <i class="fab fa-youtube text-xs"></i>
+                                </a>
+                            @else
+                                <span class="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-200 cursor-default">
+                                    <i class="fab fa-youtube text-xs"></i>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            {{-- No search result within this category --}}
+            <div data-noresult
+                 class="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200 mt-2"
+                 style="display:none;">
+                <i class="fas fa-search text-3xl text-gray-200 mb-3"></i>
+                <p class="text-gray-400 text-sm">Tidak ada destinasi yang cocok dengan pencarian Anda.</p>
+                <button @click="search = ''" class="mt-3 text-xs text-red-400 hover:text-red-600 underline">Hapus pencarian</button>
+            </div>
+
+            @else
+            {{-- Empty state --}}
+            <div class="text-center py-12 bg-red-50 rounded-xl border border-red-100">
+                <div class="inline-flex items-center justify-center rounded-full bg-red-100 mb-4"
+                     style="width: 72px; height: 72px;">
+                    <i class="{{ $destCat->icon_class }} text-3xl text-red-300"></i>
+                </div>
+                <p class="text-gray-400 text-sm">Belum ada destinasi untuk kategori <strong>{{ $destCat->name }}</strong>.</p>
+                <p class="text-gray-300 text-xs mt-1">Tambahkan melalui panel admin.</p>
+            </div>
+            @endif
+        </div>
+        @endforeach
+
+        <!-- Lightbox Modal -->
+        <div
+            x-show="lightbox"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click.self="closeLightbox()"
+            class="fixed inset-0 z-[999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            style="display:none;">
+
+            <div
+                x-show="lightbox"
+                x-transition:enter="transition ease-out duration-250"
+                x-transition:enter-start="opacity-0 scale-90"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-90"
+                class="relative bg-white rounded-2xl shadow-2xl overflow-hidden max-w-2xl w-full mx-auto">
+
+                {{-- Close Button --}}
+                <button @click="closeLightbox()"
+                        class="absolute top-3 right-3 z-10 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors duration-200">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+
+                {{-- Image --}}
+                <div class="bg-gray-100">
+                    <img :src="lightboxImg"
+                         :alt="lightboxTitle"
+                         class="w-full max-h-[60vh] object-contain">
+                </div>
+
+                {{-- Info --}}
+                <div class="p-5">
+                    <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold mb-2" x-text="lightboxCat"></span>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1" x-text="lightboxTitle"></h3>
+                    <p class="text-gray-500 text-sm line-clamp-3" x-text="lightboxDesc" x-show="lightboxDesc"></p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
+    </div>
+    @endif
+
     <!-- Banner Sliders -->
     @if($sliders->count() > 0)
     <div class="mb-12 rounded-xl overflow-hidden shadow-sm relative group">
-        <div class="swiper banner-swiper">
+        <div class="swiper banner-swiper h-[220px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]">
             <div class="swiper-wrapper">
                 @foreach($sliders as $slider)
                 <div class="swiper-slide">
                     @if($slider->url)
-                        <a href="{{ $slider->url }}" target="_blank">
-                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto max-h-[300px] object-cover">
+                        <a href="{{ $slider->url }}" target="_blank" class="block w-full h-full">
+                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
                         </a>
                     @else
-                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto max-h-[300px] object-cover">
+                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
                     @endif
                 </div>
                 @endforeach
@@ -94,6 +398,8 @@
         });
     </script>
     @endif
+
+   
 
     <!-- Latest News Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -159,7 +465,7 @@
     </div>
 
     <!-- Festival Section -->
-    @if($festivals->count() > 0)
+    <!-- @if($festivals->count() > 0)
     <div id="festival" class="mt-16 mb-12" x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '' }">
         <div class="text-center mb-10">
             <h3 class="text-4xl font-bold text-slate-900 mb-2">Festival & Kegiatan</h3>
@@ -229,7 +535,7 @@
             </div>
         </div>
     </div>
-    @endif
+    @endif -->
 
     <!-- Gallery Section -->
     <div id="galeri" class="mt-16 mb-8 flex flex-col items-center" x-data="{ filter: 'all' }">

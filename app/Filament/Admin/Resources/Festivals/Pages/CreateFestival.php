@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateFestival extends CreateRecord
 {
     protected static string $resource = FestivalResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
