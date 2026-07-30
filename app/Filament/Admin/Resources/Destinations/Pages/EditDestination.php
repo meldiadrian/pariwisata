@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Destinations\Pages;
 
 use App\Filament\Admin\Resources\Destinations\DestinationResource;
+use App\Filament\Admin\Actions\DeleteImageAction;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -13,6 +14,7 @@ class EditDestination extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            DeleteImageAction::make('image', 'public', 'Hapus Foto'),
             DeleteAction::make(),
         ];
     }

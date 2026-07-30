@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\BlockIpMiddleware::class,
             \App\Http\Middleware\LogPageVisit::class,
             \App\Http\Middleware\SecureLivewireUploads::class,
+            \App\Http\Middleware\ImageCacheHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

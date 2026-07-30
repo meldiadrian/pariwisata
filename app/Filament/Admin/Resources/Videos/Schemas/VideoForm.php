@@ -3,11 +3,8 @@
 namespace App\Filament\Admin\Resources\Videos\Schemas;
 
 use Filament\Schemas\Schema;
-
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-use App\Support\WebpUploadHelper;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class VideoForm
 {
@@ -23,9 +20,20 @@ class VideoForm
                 FileUpload::make('thumbnail')
                     ->image()
                     ->directory('videos')
+                    ->disk('public')
+                    ->visibility('public')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
-                        return WebpUploadHelper::convertAndStore($file, 'videos');
+                    ->maxSize(5120)
+                    ->deletable(true)
+                    ->reorderable(false)
+                    ->openable()
+                    ->downloadable()
+                    ->previewable(true)
+                    ->imagePreviewHeight('200')
+                    ->deleteUploadedFileUsing(function ($file) {
+                        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
+                        }
                     }),
             ]);
     }

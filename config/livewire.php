@@ -129,7 +129,7 @@ return [
     */
 
     'temporary_file_upload' => [
-        'disk' => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK', 'local'), // Use local disk by default for better security
+        'disk' => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK', 'public'), // Use public disk for faster access
         'rules' => ['required', 'file', 'max:10240'],         // Max 10MB, required validation
         'directory' => null,                                  // Example: 'tmp'                     | Default: 'livewire-tmp'
         'middleware' => 'throttle:60,1',                     // Rate limiting to prevent abuse

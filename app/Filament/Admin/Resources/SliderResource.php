@@ -13,12 +13,11 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
-use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Str;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use App\Support\WebpUploadHelper;
+use Illuminate\Support\Facades\Storage;
+use Filament\Notifications\Notification;
 
 class SliderResource extends Resource
 {
@@ -47,11 +46,22 @@ class SliderResource extends Resource
                     ->label('Gambar Slider')
                     ->image()
                     ->directory('sliders')
-                    ->required()
+                    ->disk('public')
+                    ->visibility('public')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
-                        return WebpUploadHelper::convertAndStore($file, 'sliders');
-                    }),
+                    ->maxSize(5120)
+                    ->deletable(true)
+                    ->reorderable(false)
+                    ->openable()
+                    ->downloadable()
+                    ->previewable(true)
+                    ->imagePreviewHeight('200')
+                    ->deleteUploadedFileUsing(function ($file) {
+                        if (Storage::disk('public')->exists($file)) {
+                            Storage::disk('public')->delete($file);
+                        }
+                    })
+                    ->required(),
 
                 TextInput::make('order')
                     ->label('Urutan')
@@ -88,8 +98,100 @@ class SliderResource extends Resource
             ])
             ->defaultSort('order')
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+                Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->modalHeading('Edit Slider')
+                    ->modalSubmitActionLabel('Simpan')
+                    ->modalCancelActionLabel('Batal')
+                    ->fillForm(fn ($record) => [
+                        'title' => $record->title,
+                        'url' => $record->url,
+                        'image' => $record->image,
+                        'order' => $record->order,
+                        'is_active' => $record->is_active,
+                    ])
+                    ->form([
+                        TextInput::make('title')
+                            ->label('Judul / Keterangan')
+                            ->maxLength(255),
+                        
+                        TextInput::make('url')
+                            ->label('Link URL')
+                            ->url()
+                            ->maxLength(255),
+                        
+                        FileUpload::make('image')
+                            ->label('Gambar Slider')
+                            ->image()
+                            ->directory('sliders')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->deletable(true)
+                            ->openable()
+                            ->downloadable()
+                            ->previewable(true)
+                            ->imagePreviewHeight('200')
+                            ->deleteUploadedFileUsing(function ($file) {
+                                if (Storage::disk('public')->exists($file)) {
+                                    Storage::disk('public')->delete($file);
+                                }
+                            })
+                            ->required(),
+                        
+                        TextInput::make('order')
+                            ->label('Urutan')
+                            ->numeric()
+                            ->default(0),
+                        
+                        Toggle::make('is_active')
+                            ->label('Aktif')
+                            ->default(true),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $record->update($data);
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Slider berhasil diperbarui.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('deleteImage')
+                    ->label('Hapus Image')
+                    ->color('danger')
+                    ->icon('heroicon-o-trash')
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus Image')
+                    ->modalDescription('Apakah Anda yakin ingin menghapus image slider ini?')
+                    ->modalSubmitActionLabel('Ya, Hapus')
+                    ->modalCancelActionLabel('Batal')
+                    ->visible(fn ($record) => $record && $record->image)
+                    ->action(function ($record) {
+                        if ($record->image && Storage::disk('public')->exists($record->image)) {
+                            Storage::disk('public')->delete($record->image);
+                        }
+                        $record->update(['image' => null]);
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Image slider berhasil dihapus.')
+                            ->success()
+                            ->send();
+                    }),
+                DeleteAction::make()
+                    ->label('Hapus')
+                    ->action(function ($record) {
+                        if ($record->image && Storage::disk('public')->exists($record->image)) {
+                            Storage::disk('public')->delete($record->image);
+                        }
+                        $record->delete();
+                        Notification::make()
+                            ->title('Berhasil')
+                            ->body('Slider berhasil dihapus.')
+                            ->success()
+                            ->send();
+                    }),
             ]);
     }
 

@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Optimize image serving with cache headers
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Log successful login & run threat analysis
         Event::listen(Login::class, function (Login $event) {
             $ip = Request::ip();

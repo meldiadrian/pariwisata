@@ -6,11 +6,6 @@ use Filament\Schemas\Schema;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-use Illuminate\Http\UploadedFile;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PhotoGalleryForm
 {
@@ -25,20 +20,49 @@ class PhotoGalleryForm
                     ->url()
                     ->label('Video URL (YouTube/Embed)')
                     ->nullable(),
+                // FileUpload::make('image')
+                //     ->image()
+                //     ->requiredWithout('video_url')
+                //     ->disk('public')
+                //     ->directory('galleries')
+                //     ->visibility('public')
+                //     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                //     ->maxSize(5120)
+                //     ->deletable()
+                //     ->openable()
+                //     ->downloadable()
+                //     ->imagePreviewHeight('200')
+                //     ->loadingIndicatorPosition('center')
+                //     ->panelLayout('grid')
+                //     ->removeUploadedFileButtonPosition('right')
+                //     ->uploadButtonPosition('left')
+                //     ->uploadProgressIndicatorPosition('left'),
+
+
                 FileUpload::make('image')
                     ->image()
-                    ->requiredWithout('video_url')
+                    ->disk('public')
                     ->directory('galleries')
-                    ->saveUploadedFileUsing(function (UploadedFile $file): string {
-                        $manager = new ImageManager(new Driver());
-                        $image = $manager->read($file->getRealPath());
-                        
-                        $filename = Str::random(40) . '.webp';
-                        $path = 'galleries/' . $filename;
-                        
-                        Storage::disk('public')->put($path, (string) $image->toWebp(80));
-                        
-                        return $path;
+                    ->visibility('public')
+                    ->nullable()
+                    ->acceptedFileTypes([
+                        'image/jpeg',
+                        'image/png',
+                        'image/gif',
+                        'image/webp',
+                    ])
+                    ->maxSize(5120)
+                    ->deletable()
+                    ->reorderable(false)
+                    ->openable()
+                    ->downloadable()
+                    ->previewable(true)
+                    ->imagePreviewHeight('250')
+                    ->imageResizeMode('cover')
+                    ->deleteUploadedFileUsing(function ($file) {
+                        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
+                        }
                     }),
             ]);
     }

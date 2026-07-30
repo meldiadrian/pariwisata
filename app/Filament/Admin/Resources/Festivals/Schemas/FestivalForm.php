@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources\Festivals\Schemas;
 
-use App\Support\WebpUploadHelper;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -10,7 +9,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FestivalForm
 {
@@ -41,9 +39,20 @@ class FestivalForm
                             ->label('Upload Poster Festival')
                             ->image()
                             ->directory('festivals')
+                            ->disk('public')
+                            ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-                            ->saveUploadedFileUsing(function (TemporaryUploadedFile $file): string {
-                                return WebpUploadHelper::convertAndStore($file, 'festivals');
+                            ->maxSize(5120)
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->openable()
+                            ->downloadable()
+                            ->previewable(true)
+                            ->imagePreviewHeight('200')
+                            ->deleteUploadedFileUsing(function ($file) {
+                                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
+                                    \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
+                                }
                             })
                             ->columnSpanFull(),
 

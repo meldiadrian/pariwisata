@@ -44,7 +44,7 @@
                     @if(!empty($setting->logo))
                         <img src="{{ asset('storage/' . $setting->logo) }}"
                              alt="{{ $setting->site_name ?? 'Logo' }}"
-                             class="h-14 w-14 object-contain flex-shrink-0
+                             class="h-14 w-32 object-contain flex-shrink-0
                                     drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
                     @else
                         {{-- Fallback emblem when no logo is set --}}
@@ -58,7 +58,7 @@
                     @endif
 
                     <div class="leading-tight">
-                        <div class="text-2xl font-extrabold tracking-wide text-red-700  leading-none">
+                        <div class="text-l font-extrabold tracking-wide text-red-700  leading-none">
                             {{ $setting->site_name ?? 'PORTAL BERITA' }}
                         </div>
                         @if(!empty($setting->tagline ?? $setting->address))
@@ -305,6 +305,8 @@
             </nav>
         </div>
     </header>
+
+    
 
     <main class="container mx-auto px-4 py-8">
         @yield('content')
