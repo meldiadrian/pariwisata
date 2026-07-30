@@ -9,6 +9,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,6 +40,13 @@ class AppServiceProvider extends ServiceProvider
 
             // Even on success, check if this IP has been suspicious before
             app(ThreatDetectionService::class)->analyse($ip, $event->user->id);
+            
+            // Clear login throttle attempts saat login berhasil
+            $email = $event->user->email ?? Request::input('email', '');
+            if ($email) {
+                $key = 'login_attempts:' . sha1($email . '|' . $ip);
+                RateLimiter::clear($key);
+            }
         });
 
         // Log logout activity

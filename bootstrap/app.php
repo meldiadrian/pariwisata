@@ -17,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\LogPageVisit::class,
             \App\Http\Middleware\SecureLivewireUploads::class,
             \App\Http\Middleware\ImageCacheHeaders::class,
+            \App\Http\Middleware\PreventExcessiveRefresh::class,
+        ]);
+        
+        // Middleware untuk throttle login gagal (hanya untuk route tertentu)
+        $middleware->alias([
+            'throttle.login' => \App\Http\Middleware\ThrottleFailedLogins::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

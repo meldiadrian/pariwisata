@@ -20,18 +20,18 @@ class DeleteImageAction
         string $disk = 'public',
         string $buttonLabel = 'Hapus Image'
     ): Action {
-        return Action::make('deleteImage')
+        return Action::make('deleteImage_' . $imageColumn)
             ->label($buttonLabel)
             ->color('danger')
-            ->icon('heroicon-o-trash-2')
+            ->icon('heroicon-o-trash')
             ->requiresConfirmation()
             ->modalHeading('Hapus Image')
             ->modalDescription('Apakah Anda yakin ingin menghapus image ini? Tindakan ini tidak dapat dibatalkan.')
             ->modalSubmitActionLabel('Ya, Hapus')
             ->modalCancelActionLabel('Batal')
-            ->visible(fn ($record) => $record && $record->{$imageColumn})
+            ->visible(fn ($record) => $record && !empty($record->{$imageColumn}))
             ->action(function ($record) use ($imageColumn, $disk) {
-                if (!$record->{$imageColumn}) {
+                if (empty($record->{$imageColumn})) {
                     Notification::make()
                         ->title('Error')
                         ->body('Tidak ada image untuk dihapus.')
@@ -41,9 +41,11 @@ class DeleteImageAction
                 }
 
                 try {
-                    // Delete file from storage
-                    if (Storage::disk($disk)->exists($record->{$imageColumn})) {
-                        Storage::disk($disk)->delete($record->{$imageColumn});
+                    $imagePath = $record->{$imageColumn};
+                    
+                    // Delete file from storage if exists
+                    if (Storage::disk($disk)->exists($imagePath)) {
+                        Storage::disk($disk)->delete($imagePath);
                     }
 
                     // Update database - set field to null
@@ -63,6 +65,12 @@ class DeleteImageAction
                         ->body('Gagal menghapus image: ' . $e->getMessage())
                         ->danger()
                         ->send();
+                    
+                    \Log::error('DeleteImageAction Error', [
+                        'column' => $imageColumn,
+                        'record_id' => $record->id ?? null,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             });
     }

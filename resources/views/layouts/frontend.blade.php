@@ -320,11 +320,11 @@
                     <h2 class="text-sm font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
                     <p class="text-gray-400 text-sm mb-4">{{ 'Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
 ' }}</p>
-                    <!-- <div class="flex space-x-4">
+                    <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
-                    </div> -->
+                    </div>
                 </div>
                 <div>
                     <h3 class="font-bold mb-4 uppercase">Kategori</h3>
@@ -335,12 +335,15 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="font-bold mb-4 uppercase">Informasi</h3>
-                    <ul class="text-gray-400 text-sm space-y-2">
-                        <li><a href="{{ route('page.show', 'profil-lembaga') }}" class="hover:text-white">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-white">Kontak</a></li>
-                        <li><a href="#" class="hover:text-white">Kebijakan Privasi</a></li>
-                    </ul>
+                    <h3 class="font-bold mb-4 uppercase">Lokasi</h3>
+                    <div class="rounded-m overflow-hidden shadow-xl">
+                        <iframe
+        class="rounded-xl w-full h-[150px]"
+        src="https://www.google.com/maps?q=Jl.+Arif+Rahman+No.24,+Bengkalis+Kota,+Kec.+Bengkalis,+Kabupaten+Bengkalis,+Riau+28713&output=embed"
+        loading="lazy"
+        allowfullscreen>
+    </iframe>
+                    </div>
                 </div>
                 <div>
                     <h3 class="font-bold mb-4 uppercase">Kontak</h3>
@@ -349,14 +352,7 @@
                         <li>Kabupaten Bengkalis,Riau 28713<br></li>
                         <li>Telp : 076622720</li>
                     </ul>
-                    <div class="rounded-2xl overflow-hidden shadow-xl">
-                        <iframe
-        class="rounded-xl w-full h-[150px]"
-        src="https://www.google.com/maps?q=Jl.+Arif+Rahman+No.24,+Bengkalis+Kota,+Kec.+Bengkalis,+Kabupaten+Bengkalis,+Riau+28713&output=embed"
-        loading="lazy"
-        allowfullscreen>
-    </iframe>
-                    </div>
+                    
               
     
 </div>

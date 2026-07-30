@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('DISPARBUDPORA')
+            ->brandName('PARIWISATA BENGKALIS')
             ->colors([
                 'primary' => Color::Amber,
             ])
