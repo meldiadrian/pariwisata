@@ -106,7 +106,7 @@
             @endforeach
         </div>
 
-        <!-- Destination Cards per Category -->
+        <!-- Destination Cards per Category ----->
 
         <!-- Placeholder: tampil saat belum ada kategori dipilih -->
         <!-- <div x-show="activeTab === null"
