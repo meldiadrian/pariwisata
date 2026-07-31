@@ -198,7 +198,7 @@
 
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-600 hover:text-red-700"><i class="x-search"></i></button>
-                    <a href="/admin" class="bg-gray-900 text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-red-700 transition">Login</a>
+                    <a href="#" class="bg-gray-900 text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-red-700 transition">Login</a>
                     {{-- Mobile hamburger --}}
                     <button @click="mobileOpen = !mobileOpen"
                             class="lg:hidden text-gray-600 hover:text-red-700 focus:outline-none">
@@ -320,11 +320,15 @@
                     <h2 class="text-sm font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
                     <p class="text-gray-400 text-sm mb-4">{{ 'Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
 ' }}</p>
+                      
+                    <img src="{{ asset('storage/lg-wisata.png') }}" alt="Logo" class="mb-4 w-32 h-auto rounded-xl">
+                    
                     <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
                     </div>
+                     
                 </div>
                 <div>
                     <h3 class="font-bold mb-4 uppercase">Kategori</h3>
