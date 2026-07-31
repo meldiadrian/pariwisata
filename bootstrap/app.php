@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\BlockIpMiddleware::class,
             \App\Http\Middleware\LogPageVisit::class,
-            \App\Http\Middleware\SecureLivewireUploads::class,
+            \App\Http\Middleware\EnhancedLivewireUploadSecurity::class, // Enhanced security
             \App\Http\Middleware\ImageCacheHeaders::class,
             \App\Http\Middleware\PreventExcessiveRefresh::class,
         ]);
