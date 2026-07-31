@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\News\Schemas;
 
+use App\Filament\Concerns\HasWebPConversion;
+use App\Services\ImageService;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -16,6 +18,8 @@ use Illuminate\Support\Str;
 
 class NewsForm
 {
+    use HasWebPConversion;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -50,24 +54,12 @@ class NewsForm
                     ]),
                 Section::make('Media & Status')
                     ->components([
-                        FileUpload::make('thumbnail')
-                            ->image()
-                            ->directory('news-thumbnails')
-                            ->disk('public')
-                            ->visibility('public')
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-                            ->maxSize(5120)
-                            ->deletable(true)
-                            ->reorderable(false)
-                            ->openable()
-                            ->downloadable()
-                            ->previewable(true)
-                            ->imagePreviewHeight('200')
-                            ->deleteUploadedFileUsing(function ($file) {
-                                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
-                                    \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
-                                }
-                            }),
+                        self::makeWebPFileUpload(
+                            directory: 'news',
+                            quality: ImageService::getQualityForType('news'),
+                            sizes: self::getSizesForType('news'),
+                            keepOriginal: false
+                        ),
                         TextInput::make('video_url')
                             ->url()
                             ->label('YouTube URL'),

@@ -7,14 +7,20 @@
         <div class="rounded-lg overflow-hidden">
             @if($ad->url)
                 <a href="{{ $ad->url }}" target="_blank" rel="noopener noreferrer" title="{{ $ad->title }}">
-                    <img src="{{ asset('storage/' . $ad->image) }}"
-                         alt="{{ $ad->title }}"
-                         class="w-full h-auto object-cover hover:opacity-90 transition duration-300">
+                    <x-responsive-image 
+                        :src="$ad->image" 
+                        :alt="$ad->title"
+                        class="w-full h-auto object-cover hover:opacity-90 transition duration-300"
+                        :sizes="['small' => 300, 'medium' => 600]"
+                    />
                 </a>
             @else
-                <img src="{{ asset('storage/' . $ad->image) }}"
-                     alt="{{ $ad->title }}"
-                     class="w-full h-auto object-cover">
+                <x-responsive-image 
+                    :src="$ad->image" 
+                    :alt="$ad->title"
+                    class="w-full h-auto object-cover"
+                    :sizes="['small' => 300, 'medium' => 600]"
+                />
             @endif
         </div>
     </div>

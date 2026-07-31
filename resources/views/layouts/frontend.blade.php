@@ -42,10 +42,12 @@
                 {{-- ── Logo & Site Identity ────────────────────────── --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
                     @if(!empty($setting->logo))
-                        <img src="{{ asset('storage/' . $setting->logo) }}"
-                             alt="{{ $setting->site_name ?? 'Logo' }}"
-                             class="h-14 w-32 object-contain flex-shrink-0
-                                    drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
+                        <x-responsive-image 
+                            :src="$setting->logo" 
+                            :alt="$setting->site_name ?? 'Logo'"
+                            class="h-14 w-32 object-contain flex-shrink-0 drop-shadow-sm group-hover:scale-105 transition-transform duration-200"
+                            :lazy="false"
+                        />
                     @else
                         {{-- Fallback emblem when no logo is set --}}
                         <div class="h-14 w-14 rounded-full bg-gradient-to-br from-red-600 to-red-800

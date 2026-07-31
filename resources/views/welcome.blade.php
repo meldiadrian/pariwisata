@@ -11,7 +11,13 @@
                 <div class="swiper-wrapper">
                     @foreach($headlines as $news)
                     <div class="swiper-slide relative">
-                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/800x600?text=News+Thumbnail' }}" class="w-full h-full object-cover">
+                        <x-responsive-image 
+                            :src="$news->thumbnail" 
+                            :alt="$news->title"
+                            class="w-full h-full object-cover"
+                            :lazy="false"
+                            :sizes="['large' => 1200, 'medium' => 800]"
+                        />
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-8">
                             <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category->name }}</span>
                             <h2 class="text-2xl md:text-4xl font-bold text-white mb-2">

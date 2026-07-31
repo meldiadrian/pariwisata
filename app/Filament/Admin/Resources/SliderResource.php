@@ -3,6 +3,8 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\SliderResource\Pages;
+use App\Filament\Concerns\HasWebPConversion;
+use App\Services\ImageService;
 use App\Models\Slider;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +23,8 @@ use Filament\Notifications\Notification;
 
 class SliderResource extends Resource
 {
+    use HasWebPConversion;
+
     protected static ?string $model = Slider::class;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
@@ -49,16 +53,46 @@ class SliderResource extends Resource
                     ->disk('public')
                     ->visibility('public')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->maxSize(5120)
+                    ->maxSize(10240)
                     ->deletable(true)
                     ->reorderable(false)
                     ->openable()
                     ->downloadable()
                     ->previewable(true)
                     ->imagePreviewHeight('200')
+                    ->saveUploadedFileUsing(function ($file) {
+                        $imageService = app(ImageService::class);
+                        
+                        try {
+                            $result = $imageService->convertUploadedFile(
+                                $file,
+                                'sliders',
+                                ImageService::getQualityForType('slider'),
+                                self::getSizesForType('slider')
+                            );
+                            
+                            return $result['path'];
+                        } catch (\Exception $e) {
+                            \Log::error('WebP conversion failed: ' . $e->getMessage());
+                            return $file->store('sliders', 'public');
+                        }
+                    })
                     ->deleteUploadedFileUsing(function ($file) {
+                        if (!$file) return;
+                        
                         if (Storage::disk('public')->exists($file)) {
                             Storage::disk('public')->delete($file);
+                        }
+                        
+                        $sizes = self::getSizesForType('slider');
+                        if (!empty($sizes)) {
+                            $pathInfo = pathinfo($file);
+                            foreach (array_keys($sizes) as $sizeName) {
+                                $sizedPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_' . $sizeName . '.webp';
+                                if (Storage::disk('public')->exists($sizedPath)) {
+                                    Storage::disk('public')->delete($sizedPath);
+                                }
+                            }
                         }
                     })
                     ->required(),
@@ -128,15 +162,45 @@ class SliderResource extends Resource
                             ->disk('public')
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(5120)
+                            ->maxSize(10240)
                             ->deletable(true)
                             ->openable()
                             ->downloadable()
                             ->previewable(true)
                             ->imagePreviewHeight('200')
+                            ->saveUploadedFileUsing(function ($file) {
+                                $imageService = app(ImageService::class);
+                                
+                                try {
+                                    $result = $imageService->convertUploadedFile(
+                                        $file,
+                                        'sliders',
+                                        ImageService::getQualityForType('slider'),
+                                        self::getSizesForType('slider')
+                                    );
+                                    
+                                    return $result['path'];
+                                } catch (\Exception $e) {
+                                    \Log::error('WebP conversion failed: ' . $e->getMessage());
+                                    return $file->store('sliders', 'public');
+                                }
+                            })
                             ->deleteUploadedFileUsing(function ($file) {
+                                if (!$file) return;
+                                
                                 if (Storage::disk('public')->exists($file)) {
                                     Storage::disk('public')->delete($file);
+                                }
+                                
+                                $sizes = self::getSizesForType('slider');
+                                if (!empty($sizes)) {
+                                    $pathInfo = pathinfo($file);
+                                    foreach (array_keys($sizes) as $sizeName) {
+                                        $sizedPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_' . $sizeName . '.webp';
+                                        if (Storage::disk('public')->exists($sizedPath)) {
+                                            Storage::disk('public')->delete($sizedPath);
+                                        }
+                                    }
                                 }
                             })
                             ->required(),

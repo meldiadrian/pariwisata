@@ -33,7 +33,12 @@
 
             @if($news->thumbnail)
             <div class="mb-8 rounded-xl overflow-hidden shadow-lg">
-                <img src="{{ asset('storage/'.$news->thumbnail) }}" class="w-full h-auto">
+                <x-responsive-image 
+                    :src="$news->thumbnail" 
+                    :alt="$news->title"
+                    class="w-full h-auto"
+                    :sizes="['medium' => 800, 'large' => 1200]"
+                />
             </div>
             @endif
 
@@ -71,7 +76,12 @@
                     @foreach($related as $item)
                     <div class="group">
                         <div class="rounded-lg overflow-hidden mb-3 aspect-video">
-                            <img src="{{ $item->thumbnail ? asset('storage/'.$item->thumbnail) : 'https://placehold.co/400x300?text=News' }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <x-responsive-image 
+                                :src="$item->thumbnail" 
+                                :alt="$item->title"
+                                class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                                :sizes="['thumbnail' => 300, 'small' => 400]"
+                            />
                         </div>
                         <h4 class="font-bold text-sm leading-snug group-hover:text-red-700 transition">
                             <a href="{{ route('news.show', $item->slug) }}">{{ $item->title }}</a>

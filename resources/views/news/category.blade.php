@@ -32,7 +32,12 @@
                 @foreach($news as $item)
                 <div class="flex flex-col md:flex-row gap-6 group bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
                     <div class="w-full md:w-1/3 shrink-0 overflow-hidden rounded-lg">
-                        <img src="{{ $item->thumbnail ? asset('storage/'.$item->thumbnail) : 'https://placehold.co/400x300?text=News' }}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-500">
+                        <x-responsive-image 
+                            :src="$item->thumbnail" 
+                            :alt="$item->title"
+                            class="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
+                            :sizes="['thumbnail' => 300, 'small' => 400]"
+                        />
                     </div>
                     <div class="flex-1">
                         <span class="text-red-700 text-xs font-bold uppercase">{{ $item->category->name }}</span>
