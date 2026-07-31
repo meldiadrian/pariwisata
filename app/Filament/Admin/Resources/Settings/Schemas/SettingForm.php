@@ -6,7 +6,9 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Cache;
 
 class SettingForm
 {
@@ -77,6 +79,36 @@ class SettingForm
                             ->url(),
                         TextInput::make('youtube')
                             ->url(),
+                    ]),
+                
+                Section::make('🛠️ Maintenance Mode')
+                    ->description('Control website accessibility for public visitors')
+                    ->collapsible()
+                    ->collapsed()
+                    ->components([
+                        Toggle::make('maintenance_mode')
+                            ->label('Enable Maintenance Mode')
+                            ->helperText('When enabled, public visitors will see the maintenance page. Admin panel remains accessible.')
+                            ->onColor('danger')
+                            ->offColor('success')
+                            ->afterStateUpdated(function () {
+                                Cache::forget('maintenance_mode');
+                                Cache::forget('maintenance_settings');
+                            }),
+                        
+                        TextInput::make('maintenance_title')
+                            ->label('Maintenance Page Title')
+                            ->placeholder('Website Under Maintenance')
+                            ->maxLength(255)
+                            ->default('Website Under Maintenance'),
+                        
+                        Textarea::make('maintenance_message')
+                            ->label('Maintenance Message')
+                            ->placeholder('We are currently performing scheduled maintenance. Please check back soon.')
+                            ->rows(4)
+                            ->maxLength(1000)
+                            ->default('We are currently performing scheduled maintenance to improve your experience. We\'ll be back shortly!')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

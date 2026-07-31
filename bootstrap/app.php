@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\BlockIpMiddleware::class,
+            \App\Http\Middleware\CheckMaintenanceMode::class, // Maintenance Mode Check
             \App\Http\Middleware\LogPageVisit::class,
             \App\Http\Middleware\EnhancedLivewireUploadSecurity::class, // Enhanced security
             \App\Http\Middleware\ImageCacheHeaders::class,

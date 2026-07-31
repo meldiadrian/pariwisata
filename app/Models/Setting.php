@@ -16,6 +16,8 @@ class Setting extends Model
     {
         return [
             'main_menu' => 'array',
+            'maintenance_mode' => 'boolean',
+            'maintenance_started_at' => 'datetime',
         ];
     }
 }
