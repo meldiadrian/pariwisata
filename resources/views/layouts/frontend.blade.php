@@ -216,7 +216,7 @@
 
                 <div class="flex items-center space-x-4">
                     <button class="text-gray-600 hover:text-red-700"><i class="x-search"></i></button>
-                    <a href="#" class="bg-gray-900 text-white px-4 py-2 rounded text-xs font-bold uppercase hover:bg-red-700 transition">Login</a>
+
                     {{-- Mobile hamburger --}}
                     <button @click="mobileOpen = !mobileOpen"
                         class="lg:hidden text-gray-600 hover:text-red-700 focus:outline-none">
