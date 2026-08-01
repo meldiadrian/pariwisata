@@ -5,6 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', $setting->site_name ?? 'Portal Berita')</title>
+
+    <meta name="description" content="@yield('description', $setting->tagline ?? 'Portal Berita')">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ $setting->site_name ?? 'Portal Berita' }}">
+    <meta property="og:title" content="@yield('title', $setting->site_name ?? 'Portal Berita')">
+    <meta property="og:description" content="@yield('description', $setting->tagline ?? 'Portal Berita')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ !empty($setting->logo) ? asset('storage/'.$setting->logo) : asset('storage/lg-wisata.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="theme-color" content="#b91c1c">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -42,7 +54,7 @@
 
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
-        <div class="container mx-auto px-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3">
                 {{-- ── Logo & Site Identity ────────────────────────── --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
@@ -320,11 +332,11 @@
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-12 pb-6">
-        <div class="container mx-auto px-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-gray-800 pb-8">
                 <div class="col-span-1 md:col-span-1">
                     <h2 class="text-sm font-bold mb-4 text-red-500">{{ $setting->site_name ?? 'NEWS PORTAL' }}</h2>
-                    <!-- <p class="text-gray-400 text-sm mb-4">{{ 'Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
+                    <!------<p class="text-gray-400 text-sm mb-4">{{ 'Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
 ' }}</p> -->
 
                     <img src="{{ asset('storage/lg-wisata.png') }}" alt="Logo" class="mb-4 w-32 h-auto rounded-xl">
