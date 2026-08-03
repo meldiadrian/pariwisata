@@ -60,6 +60,7 @@
     <div x-data="{
             activeTab: null,
             search: '',
+            sortBy: 'name-asc',
             lightbox: false,
             lightboxImg: '',
             lightboxTitle: '',
@@ -70,6 +71,25 @@
                 const q = this.search.toLowerCase().trim();
                 const text = (el.dataset.searchtext || '').toLowerCase();
                 return text.includes(q);
+            },
+            sortCards(container) {
+                const cards = Array.from(container.querySelectorAll('[data-card]'));
+                const grid = container.querySelector('[data-grid]');
+                if (!grid) return;
+                
+                cards.sort((a, b) => {
+                    const nameA = (a.dataset.name || '').toLowerCase();
+                    const nameB = (b.dataset.name || '').toLowerCase();
+                    
+                    if (this.sortBy === 'name-asc') {
+                        return nameA.localeCompare(nameB);
+                    } else if (this.sortBy === 'name-desc') {
+                        return nameB.localeCompare(nameA);
+                    }
+                    return 0;
+                });
+                
+                cards.forEach(card => grid.appendChild(card));
             },
             openLightbox(img, title, desc, cat) {
                 this.lightboxImg = img;
@@ -148,12 +168,60 @@
                 });
                 const noResult = $el.querySelector('[data-noresult]');
                 if (noResult) noResult.style.display = visible === 0 && search.trim() !== '' ? '' : 'none';
-            })">
+            }); $watch('sortBy', () => { sortCards($el); })">
+
+            @if($destCat->slug === 'eksplor-bengkalis')
+            {{-- Search & Sort Controls - Only for Eksplor Bengkalis --}}
+            <div class="mb-6 space-y-4">
+                {{-- Search Bar --}}
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        x-model="search"
+                        placeholder="Cari destinasi berdasarkan nama..."
+                        class="w-full pl-12 pr-12 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 outline-none text-sm"
+                    >
+                    <button 
+                        x-show="search.length > 0"
+                        @click="search = ''"
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-600 transition-colors"
+                        style="display: none;">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+
+                {{-- Sort Dropdown --}}
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-sm text-gray-600 font-medium flex items-center gap-2">
+                        <i class="fas fa-sort-amount-down text-red-600"></i>
+                        Urutkan:
+                    </span>
+                    <select 
+                        x-model="sortBy"
+                        class="px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 outline-none text-sm font-medium text-gray-700 cursor-pointer bg-white hover:border-red-300">
+                        <option value="name-asc">Nama A → Z</option>
+                        <option value="name-desc">Nama Z → A</option>
+                    </select>
+                </div>
+
+                {{-- Search Info --}}
+                <div x-show="search.length > 0" 
+                     class="text-center text-sm text-gray-500"
+                     style="display: none;">
+                    <span>Mencari: </span>
+                    <span class="font-semibold text-red-600" x-text="search"></span>
+                </div>
+            </div>
+            @endif
 
             @if($destCat->destinations->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="grid-{{ $destCat->slug }}">
+            <div data-grid class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="grid-{{ $destCat->slug }}">
                 @foreach($destCat->destinations as $destination)
                 <div data-card
+                     data-name="{{ strtolower($destination->name) }}"
                      data-searchtext="{{ strtolower($destination->name . ' ' . ($destination->address ?? '') . ' ' . ($destination->description ?? '') . ' ' . $destCat->name) }}"
                      class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col group hover:-translate-y-1"
                      style="transition: opacity 0.2s, transform 0.2s;">

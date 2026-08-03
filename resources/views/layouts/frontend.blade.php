@@ -45,9 +45,9 @@
             </div>
             @endif
             <div class="flex space-x-4">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=100083774987735"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/pariwisatabks_official/"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
     </div>
@@ -342,9 +342,9 @@
                     <img src="{{ asset('storage/lg-wisata.png') }}" alt="Logo" class="mb-4 w-32 h-auto rounded-xl">
 
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                         <a href="https://www.facebook.com/profile.php?id=100083774987735"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/pariwisatabks_official/"><i class="fab fa-instagram"></i></a>
                     </div>
 
                 </div>
