@@ -53,7 +53,7 @@ class SliderResource extends Resource
                     ->disk('public')
                     ->visibility('public')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->maxSize(10240)
+                    ->maxSize(15360) // 15MB
                     ->deletable(true)
                     ->reorderable(false)
                     ->openable()
@@ -162,7 +162,7 @@ class SliderResource extends Resource
                             ->disk('public')
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(10240)
+                            ->maxSize(15360) // 15MB
                             ->deletable(true)
                             ->openable()
                             ->downloadable()

@@ -30,7 +30,7 @@ trait HasWebPConversion
             ->disk('public')
             ->visibility('public')
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-            ->maxSize(10240) // 10MB
+            ->maxSize(15360) // 15MB
             ->deletable(true)
             ->reorderable(false)
             ->openable()
@@ -101,7 +101,7 @@ trait HasWebPConversion
             ->disk('public')
             ->visibility('public')
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-            ->maxSize(10240)
+            ->maxSize(15360) // 15MB
             ->maxFiles($maxFiles)
             ->deletable(true)
             ->reorderable(true)

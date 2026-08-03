@@ -45,6 +45,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum Upload File Size
+    |--------------------------------------------------------------------------
+    |
+    | This is the maximum file size (in kilobytes) that can be uploaded
+    | through Filament file upload components. Set to 15MB (15360 KB) to
+    | accommodate high-quality images before WebP conversion.
+    |
+    */
+
+    'max_upload_file_size' => env('FILAMENT_MAX_UPLOAD_FILE_SIZE', 15360),
+
+    /*
+    |--------------------------------------------------------------------------
     | Temporary File URL Expiry
     |--------------------------------------------------------------------------
     |

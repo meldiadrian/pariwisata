@@ -16,7 +16,10 @@ class AdvertisementsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->disk('public')
+                    ->size(60)
+                    ->square(),
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('position'),

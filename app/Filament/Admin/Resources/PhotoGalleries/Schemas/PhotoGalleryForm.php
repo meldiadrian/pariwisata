@@ -55,7 +55,7 @@ class PhotoGalleryForm
                         'image/gif',
                         'image/webp',
                     ])
-                    ->maxSize(10240)
+                    ->maxSize(15360) // 15MB
                     ->deletable()
                     ->reorderable(false)
                     ->openable()

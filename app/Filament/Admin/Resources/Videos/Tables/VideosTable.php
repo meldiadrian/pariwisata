@@ -15,7 +15,10 @@ class VideosTable
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail'),
+                ImageColumn::make('thumbnail')
+                    ->disk('public')
+                    ->size(60)
+                    ->square(),
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('youtube_url'),

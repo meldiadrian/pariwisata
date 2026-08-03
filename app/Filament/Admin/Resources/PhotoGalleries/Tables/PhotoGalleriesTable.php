@@ -17,7 +17,10 @@ class PhotoGalleriesTable
         return $table
             ->columns([
                 ImageColumn::make('image')
-                    ->label('Foto'),
+                    ->label('Foto')
+                    ->disk('public')
+                    ->size(60)
+                    ->square(),
                 TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()

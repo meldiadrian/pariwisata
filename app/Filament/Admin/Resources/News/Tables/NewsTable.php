@@ -21,7 +21,11 @@ class NewsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail'),
+                ImageColumn::make('thumbnail')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->size(60)
+                    ->square(),
                 TextColumn::make('title')
                     ->searchable()
                     ->wrap(),

@@ -23,7 +23,7 @@ class VideoForm
                     ->disk('public')
                     ->visibility('public')
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-                    ->maxSize(5120)
+                    ->maxSize(15360) // 15MB
                     ->deletable(true)
                     ->reorderable(false)
                     ->openable()
