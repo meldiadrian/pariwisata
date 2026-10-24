@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "dc993f7da33d53565efe812b417c4664",
-=======
-    "content-hash": "b20b71a0349cd4207d42c20d81ced86e",
->>>>>>> origin/main
     "packages": [
         {
             "name": "amidesfahani/filament-tinyeditor",
@@ -22,13 +18,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/amidesfahani/filament-tinyeditor/zipball/e7bed7f92d5ef4ecb60e17a59a86457c4e53ae30",
                 "reference": "e7bed7f92d5ef4ecb60e17a59a86457c4e53ae30",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "shasum": ""
             },
             "require": {
                 "php": "^8.1",
@@ -2896,7 +2886,6 @@
         },
         {
             "name": "laravel/framework",
-<<<<<<< HEAD
             "version": "v12.70.1",
             "source": {
                 "type": "git",
@@ -2907,18 +2896,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/framework/zipball/e09fc54263d1a56cfe1709958fcbb22a4159b1e3",
                 "reference": "e09fc54263d1a56cfe1709958fcbb22a4159b1e3",
-=======
-            "version": "v12.58.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laravel/framework.git",
-                "reference": "6172ae1f44ba5d89e111057ee4a4e7c27f5a610d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6172ae1f44ba5d89e111057ee4a4e7c27f5a610d",
-                "reference": "6172ae1f44ba5d89e111057ee4a4e7c27f5a610d",
->>>>>>> origin/main
                 "shasum": ""
             },
             "require": {
@@ -3031,17 +3008,10 @@
                 "league/flysystem-sftp-v3": "^3.25.1",
                 "mockery/mockery": "^1.6.10",
                 "opis/json-schema": "^2.4.1",
-<<<<<<< HEAD
                 "orchestra/testbench-core": "^10.15.0",
                 "pda/pheanstalk": "^5.0.6|^7.0.0",
                 "php-http/discovery": "^1.15",
                 "phpstan/phpstan": "2.2.13",
-=======
-                "orchestra/testbench-core": "^10.9.0",
-                "pda/pheanstalk": "^5.0.6|^7.0.0",
-                "php-http/discovery": "^1.15",
-                "phpstan/phpstan": "^2.1.41",
->>>>>>> origin/main
                 "phpunit/phpunit": "^10.5.35|^11.5.3|^12.0.1",
                 "predis/predis": "^2.3|^3.0",
                 "resend/resend-php": "^0.10.0|^1.0",
@@ -3134,11 +3104,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-<<<<<<< HEAD
             "time": "2026-10-21T12:55:36+00:00"
-=======
-            "time": "2026-04-26T16:42:04+00:00"
->>>>>>> origin/main
         },
         {
             "name": "laravel/prompts",
@@ -5206,13 +5172,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/opcodesio/log-viewer/zipball/d244fb6307c37051f6e9e3ac880c72797eeb4c83",
                 "reference": "d244fb6307c37051f6e9e3ac880c72797eeb4c83",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "shasum": ""
             },
             "require": {
                 "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0",
@@ -5300,13 +5260,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/opcodesio/mail-parser/zipball/639ef31cbd146a63416283e75afce152e13233ea",
                 "reference": "639ef31cbd146a63416283e75afce152e13233ea",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "shasum": ""
             },
             "require": {
                 "php": "^8.0"
@@ -10407,13 +10361,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/3d6219296c9a92c87337bb38fb502a469ac1167f",
                 "reference": "3d6219296c9a92c87337bb38fb502a469ac1167f",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "shasum": ""
             },
             "type": "component",
             "extra": {
@@ -10534,12 +10482,12 @@
             "version": "v5.6.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vlucas/phpdotenv.git",
+                "url": "https://github.com/phpdotenv/phpdotenv.git",
                 "reference": "955e7815d677a3eaa7075231212f2110983adecc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/955e7815d677a3eaa7075231212f2110983adecc",
+                "url": "https://api.github.com/repos/phpdotenv/phpdotenv/zipball/955e7815d677a3eaa7075231212f2110983adecc",
                 "reference": "955e7815d677a3eaa7075231212f2110983adecc",
                 "shasum": ""
             },
