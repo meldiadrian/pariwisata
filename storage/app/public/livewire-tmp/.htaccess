@@ -1,0 +1,30 @@
+# Livewire Temporary Upload Security
+# BLOCK ALL DIRECT ACCESS TO THIS DIRECTORY
+
+# Deny all access
+Order Deny,Allow
+Deny from all
+
+# Prevent PHP execution
+<FilesMatch "\.(php|php3|php4|php5|phtml|phps)$">
+    Deny from all
+</FilesMatch>
+
+# Prevent script execution
+<FilesMatch "\.(js|jsx|ts|tsx|sh|bat|cmd|exe)$">
+    Deny from all
+</FilesMatch>
+
+# Block directory listing
+Options -Indexes
+
+# Disable PHP parsing
+php_flag engine off
+
+# Remove X-Powered-By header
+Header unset X-Powered-By
+
+# Prevent MIME sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
