@@ -255,4 +255,8 @@
     </script>
 </body>
 </html>
+<<<<<<<< HEAD:storage/framework/views/b4458cbdfc32a0a98b9586281ef6d661.php
 <?php /**PATH C:\laragon\www\portal-wisata\resources\views\errors\404.blade.php ENDPATH**/ ?>
+========
+<?php /**PATH C:\laragon\www\pariwisatalive\resources\views\errors\404.blade.php ENDPATH**/ ?>
+>>>>>>>> upstream/main:storage/framework/views/bc6402b1212419ddaaeaa484a0b70539.php

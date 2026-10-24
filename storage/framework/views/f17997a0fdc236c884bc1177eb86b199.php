@@ -18,4 +18,8 @@
         $this->hasActionsModalRendered = true;
     ?>
 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+<<<<<<<< HEAD:storage/framework/views/f17997a0fdc236c884bc1177eb86b199.php
 <?php /**PATH C:\laragon\www\portal-wisata\vendor\filament\actions\resources\views\components\modals.blade.php ENDPATH**/ ?>
+========
+<?php /**PATH C:\laragon\www\pariwisatalive\vendor\filament\actions\resources\views\components\modals.blade.php ENDPATH**/ ?>
+>>>>>>>> upstream/main:storage/framework/views/9f6ff583bffcfba2d36790e77e4a15e2.php

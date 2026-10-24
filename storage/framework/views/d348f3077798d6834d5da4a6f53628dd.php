@@ -48,4 +48,8 @@
 <?php $component = $__componentOriginal511d4862ff04963c3c16115c05a86a9d; ?>
 <?php unset($__componentOriginal511d4862ff04963c3c16115c05a86a9d); ?>
 <?php endif; ?>
+<<<<<<<< HEAD:storage/framework/views/d348f3077798d6834d5da4a6f53628dd.php
 <?php /**PATH C:\laragon\www\portal-wisata\vendor\filament\forms\resources\views\components\checkbox.blade.php ENDPATH**/ ?>
+========
+<?php /**PATH C:\laragon\www\pariwisatalive\vendor\filament\forms\resources\views\components\checkbox.blade.php ENDPATH**/ ?>
+>>>>>>>> upstream/main:storage/framework/views/edc6fd70fa63ade440e53a0f95926217.php

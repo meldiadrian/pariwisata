@@ -29,7 +29,7 @@ class NewsForm
                                 TextInput::make('title')
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                                    ->afterStateUpdated(fn(string $operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
                                 TextInput::make('slug')
                                     ->disabled()
                                     ->dehydrated()
@@ -54,11 +54,11 @@ class NewsForm
                 Section::make('Media & Status')
                     ->components([
                         self::makeWebPFileUpload(
-                            fieldName:     'thumbnail',
-                            directory:     'news',
-                            quality:       ImageService::getQualityForType('news'),
-                            sizes:         self::getSizesForType('news'),
-                            required:      false,
+                            fieldName: 'thumbnail',
+                            directory: 'news',
+                            quality: ImageService::getQualityForType('news'),
+                            sizes: self::getSizesForType('news'),
+                            required: false,
                             previewHeight: '200'
                         ),
                         TextInput::make('video_url')
@@ -75,13 +75,14 @@ class NewsForm
                             ]),
                         Select::make('status')
                             ->options([
-                                'draft'   => 'Draft',
+                                'draft' => 'Draft',
                                 'publish' => 'Publish',
                                 'archive' => 'Archive',
                             ])
                             ->required()
                             ->default('draft'),
-                        DateTimePicker::make('published_at'),
+                        DateTimePicker::make('published_at')
+                            ->required(),
                     ]),
 
                 Section::make('SEO')

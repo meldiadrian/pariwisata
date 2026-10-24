@@ -4,10 +4,10 @@
     
 
     <!-- Hero Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 sm:mb-12">
         <!-- Main Slider -->
         <div class="lg:col-span-2">
-            <div class="swiper hero-swiper rounded-xl overflow-hidden shadow-lg h-[400px] md:h-[500px]">
+            <div class="swiper hero-swiper rounded-xl overflow-hidden shadow-lg h-[220px] sm:h-[360px] md:h-[440px] lg:h-[500px]">
                 <div class="swiper-wrapper">
                     @foreach($headlines as $news)
                     <div class="swiper-slide relative">
@@ -18,12 +18,12 @@
                             :lazy="false"
                             :sizes="['large' => 1200, 'medium' => 800]"
                         />
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-8">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6 md:p-8">
                             <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category->name }}</span>
-                            <h2 class="text-2xl md:text-4xl font-bold text-white mb-2">
+                            <h2 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
                                 <a href="{{ route('news.show', $news->slug) }}" class="hover:underline">{{ $news->title }}</a>
                             </h2>
-                            <p class="text-gray-200 text-sm md:text-base line-clamp-2">{{ $news->summary }}</p>
+                            <p class="hidden sm:block text-gray-200 text-xs sm:text-sm line-clamp-2">{{ $news->summary }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -37,7 +37,7 @@
         <!-- Trending Sidebar -->
         <div class="lg:col-span-1">
             <h3 class="text-xl font-bold mb-4 border-l-4 border-red-700 pl-3">TERPOPULER</h3>
-            <div class="space-y-4">
+            <div class="space-y-4 max-h-[200px] sm:max-h-[280px] lg:max-h-none overflow-y-auto lg:overflow-visible pr-1">
                 @foreach($trending as $index => $news)
                 <div class="flex items-start space-x-4 group border-b border-gray-100 pb-4">
                     <span class="text-3xl font-black text-gray-200 group-hover:text-red-700 transition">{{ $index + 1 }}</span>
@@ -105,7 +105,7 @@
             }
         }"
          @keydown.escape.window="closeLightbox()"
-         class="container mx-auto mb-12 bg-gray-100 py-8 rounded-xl">
+         class="mb-12 bg-gray-100 py-6 sm:py-8 rounded-xl px-4 sm:px-6">
 
 
 
@@ -116,15 +116,15 @@
     @if($setting && ($setting->sambutan_nama_kepala || $setting->sambutan_isi))
     <div class="mb-12">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="flex flex-col md:flex-row items-stretch">
+            <div class="flex flex-col sm:flex-row items-stretch">
 
                 {{-- ── Photo Column ── --}}
-                <div class="md:w-64 lg:w-72 shrink-0 relative">
+                <div class="sm:w-48 md:w-64 lg:w-72 shrink-0 relative">
                     @if($setting->sambutan_foto_kepala)
                         <img
                             src="{{ asset('storage/' . $setting->sambutan_foto_kepala) }}"
                             alt="{{ $setting->sambutan_nama_kepala ?? 'Kepala Dinas' }}"
-                            class="w-full h-64 md:h-full object-cover object-top"
+                            class="w-full h-52 sm:h-full object-cover object-top"
                         >
                     @else
                         {{-- Placeholder jika foto belum diisi --}}
@@ -137,7 +137,7 @@
                 </div>
 
                 {{-- ── Content Column ── --}}
-                <div class="flex-1 p-6 md:p-8 lg:p-10 flex flex-col justify-center relative">
+                <div class="flex-1 p-5 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center relative">
                     {{-- Decorative quote mark background --}}
                     <div class="absolute top-4 right-6 text-green-100 text-9xl font-serif leading-none select-none pointer-events-none" aria-hidden="true">"</div>
 
@@ -150,7 +150,7 @@
                     </div>
 
                     {{-- Title --}}
-                    <h2 class="text-2xl md:text-3xl font-black text-gray-900 mb-2 leading-tight">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 mb-2 leading-tight">
                         Selamat Datang di {{ $setting->site_name ?? config('app.name') }}
                     </h2>
 
@@ -192,11 +192,11 @@
           
 
         <!-- Icon Category Menu -->
-        <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center overflow-x-auto gap-4 md:gap-8 pb-4 scrollbar-hide mb-8">
+        <div class="flex flex-nowrap sm:flex-wrap justify-start sm:justify-center overflow-x-auto gap-3 sm:gap-6 md:gap-8 pb-4 scrollbar-hide mb-8">
             @foreach($destinationCategories as $destCat)
             <button
                 @click="activeTab = (activeTab === '{{ $destCat->slug }}' ? null : '{{ $destCat->slug }}')"
-                class="flex flex-col items-center min-w-[90px] pt-3 group focus:outline-none shrink-0">
+                class="flex flex-col items-center min-w-[75px] sm:min-w-[90px] pt-3 group focus:outline-none shrink-0">
                 <div
                     :class="activeTab === '{{ $destCat->slug }}'
                         ? 'bg-red-100 text-red-700 ring-2 ring-red-500 scale-110'
@@ -300,7 +300,7 @@
             @endif
 
             @if($destCat->destinations->count() > 0)
-            <div data-grid class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="grid-{{ $destCat->slug }}">
+            <div data-grid class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="grid-{{ $destCat->slug }}">
                 @foreach($destCat->destinations as $destination)
                 <div data-card
                      data-name="{{ strtolower($destination->name) }}"
@@ -563,12 +563,12 @@
     <!-- Latest News Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
-            <h3 class="text-2xl font-black mb-6 border-b-2 border-red-700 inline-block pb-1">BERITA TERBARU</h3>
-            <div class="space-y-8">
+            <h3 class="text-xl sm:text-2xl font-black mb-6 border-b-2 border-red-700 inline-block pb-1">BERITA TERBARU</h3>
+            <div class="space-y-6 sm:space-y-8">
                 @foreach($latestNews as $news)
-                <div class="flex flex-col md:flex-row gap-6 group">
-                    <div class="w-full md:w-1/3 shrink-0 overflow-hidden rounded-lg shadow-sm">
-                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-500">
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
+                    <div class="w-full sm:w-1/3 shrink-0 overflow-hidden rounded-lg shadow-sm">
+                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="flex-1">
                         <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category->name }}</span>
@@ -597,7 +597,7 @@
             @include('partials._sidebar_ads')
 
             <!-- Categories Widget -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-[276px] mx-auto">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full max-w-[275px] mx-auto">
                 <h3 class="font-bold mb-4 border-l-4 border-red-700 pl-3">KATEGORI</h3>
                 <div class="space-y-2">
                     @foreach($categories as $cat)
@@ -724,17 +724,17 @@
                 return url;
             }
          }">
-        <h3 class="text-4xl font-bold text-slate-900 mb-2">Galeri Kegiatan</h3>
-        <p class="text-slate-500 mb-8 text-lg">Momen pelayanan dan kegiatan kami</p>
+        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-2">Galeri Kegiatan</h3>
+        <p class="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">Momen pelayanan dan kegiatan kami</p>
         
-        <div class="inline-flex bg-slate-100 p-1.5 rounded-full mb-10 shadow-sm">
-            <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Semua</button>
-            <button @click="filter = 'photo'" :class="filter === 'photo' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Foto</button>
-            <button @click="filter = 'video'" :class="filter === 'video' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-8 py-2 rounded-full font-medium transition-all duration-300">Video</button>
+        <div class="inline-flex bg-slate-100 p-1 sm:p-1.5 rounded-full mb-6 sm:mb-10 shadow-sm">
+            <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-4 sm:px-8 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-300">Semua</button>
+            <button @click="filter = 'photo'" :class="filter === 'photo' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-4 sm:px-8 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-300">Foto</button>
+            <button @click="filter = 'video'" :class="filter === 'video' ? 'bg-red-700 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'" class="px-4 sm:px-8 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-300">Video</button>
         </div>
         
         @if($galleries->count() > 0)
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
             @foreach($galleries as $gallery)
             <div x-show="filter === 'all' || filter === '{{ $gallery->video_url ? 'video' : 'photo' }}'" class="group block relative overflow-hidden rounded-xl shadow-sm aspect-square bg-gray-100 transition-all duration-300">
                 @if($gallery->video_url)

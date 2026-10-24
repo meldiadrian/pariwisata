@@ -649,4 +649,8 @@
 <?php endif; ?>
 
 </div>
+<<<<<<<< HEAD:storage/framework/views/01f5669c30e6dd6d3dc0df707f8ec9a7.php
 <?php /**PATH C:\laragon\www\portal-wisata\resources\views\filament\admin\pages\login.blade.php ENDPATH**/ ?>
+========
+<?php /**PATH C:\laragon\www\pariwisatalive\resources\views\filament\admin\pages\login.blade.php ENDPATH**/ ?>
+>>>>>>>> upstream/main:storage/framework/views/0d7ea8dfab7c0a801d9261d9c078461e.php

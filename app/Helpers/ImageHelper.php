@@ -56,6 +56,12 @@ class ImageHelper
         }
 
         $pathInfo = pathinfo($imagePath);
+
+        // Guard: path must have a valid extension and filename
+        if (empty($pathInfo['extension']) || empty($pathInfo['filename'])) {
+            return $imagePath;
+        }
+
         $sizedPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_' . $size . '.' . $pathInfo['extension'];
 
         if (Storage::disk('public')->exists($sizedPath)) {

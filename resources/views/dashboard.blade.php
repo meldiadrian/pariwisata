@@ -151,15 +151,21 @@
         </main>
     </div>
 
-    <!-- Simple JS for mobile menu toggle -->
     <script>
-        // A simple toggle style for mobile since we are not using Tailwind/Alpine
+        // Toggle sidebar on mobile using CSS class
         document.querySelector('.menu-toggle').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
-            if(sidebar.style.transform === 'translateX(0%)') {
-                sidebar.style.transform = 'translateX(-100%)';
-            } else {
-                sidebar.style.transform = 'translateX(0%)';
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
             }
         });
     </script>
