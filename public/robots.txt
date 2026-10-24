@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Block access to sensitive directories
+Disallow: /storage/livewire-tmp/
+Disallow: /livewire-tmp/
+Disallow: /admin/
+Disallow: /.env
+Disallow: /vendor/
+
+Sitemap: http://localhost/sitemap.xml
