@@ -161,6 +161,8 @@ class PageCacheService
             }
         }
 
+        $ttl = (int) config('pagecache.default_ttl', 300);
+        $response->headers->set('Cache-Control', "public, max-age={$ttl}, must-revalidate");
         $response->headers->set('X-Page-Cache', 'HIT');
         $response->headers->set('X-Page-Cache-At', $cached['cached_at'] ?? now()->toIso8601String());
 
@@ -175,13 +177,15 @@ class PageCacheService
         $ttl = $ttl ?? (int) config('pagecache.default_ttl', 300);
         $content = $response->getContent();
         $etag = '"' . md5($content) . '"';
+        $cacheControl = "public, max-age={$ttl}, must-revalidate";
 
         $data = [
             'content'   => $content,
             'status'    => $response->getStatusCode(),
             'headers'   => [
-                'Content-Type' => $response->headers->get('Content-Type', 'text/html; charset=UTF-8'),
-                'ETag'         => $etag,
+                'Content-Type'  => $response->headers->get('Content-Type', 'text/html; charset=UTF-8'),
+                'ETag'          => $etag,
+                'Cache-Control' => $cacheControl,
             ],
             'cached_at' => now()->toIso8601String(),
         ];
@@ -191,6 +195,7 @@ class PageCacheService
 
         // Pasang header indikator pada response yang baru di-cache
         $response->headers->set('ETag', $etag);
+        $response->headers->set('Cache-Control', $cacheControl);
         $response->headers->set('X-Page-Cache', 'MISS');
     }
 

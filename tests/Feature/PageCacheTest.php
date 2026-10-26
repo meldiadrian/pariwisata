@@ -33,6 +33,7 @@ class PageCacheTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('X-Page-Cache', 'MISS');
         $this->assertNotEmpty($response->headers->get('ETag'));
+        $this->assertStringContainsString('public', (string) $response->headers->get('Cache-Control'));
     }
 
     public function test_second_request_is_a_cache_hit(): void
@@ -43,6 +44,7 @@ class PageCacheTest extends TestCase
         $secondResponse = $this->get('/test-cacheable-page');
         $secondResponse->assertStatus(200);
         $secondResponse->assertHeader('X-Page-Cache', 'HIT');
+        $this->assertStringContainsString('public', (string) $secondResponse->headers->get('Cache-Control'));
         $this->assertEquals($firstContent, $secondResponse->getContent());
     }
 
