@@ -18,13 +18,15 @@
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="theme-color" content="#b91c1c">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -89,7 +91,7 @@
 
     <!-- Preloader -->
     <div id="site-preloader"
-        class="fixed inset-0 z-[9999] bg-white flex items-center justify-center transition-opacity duration-5000000">
+        class="fixed inset-0 z-[9999] bg-white flex items-center justify-center transition-opacity duration-300">
         <div class="relative flex items-center justify-center">
             <!-- Donut Spinner -->
             <div class="w-24 h-24 border-4 border-gray-200 border-t-red-700 rounded-full animate-spin"></div>
@@ -174,14 +176,18 @@
                 <nav class="hidden lg:flex items-center space-x-1 font-semibold uppercase text-sm">
                     @php
                         /**
-                         * Helper closure: resolve a menu item's URL based on its type.
+                         * Helper closure: resolve a menu item's URL from cached map to eliminate N+1 DB queries.
                          */
-                        $resolveUrl = function (array $item) use (&$resolveUrl): ?string {
+                        $cachedPages = $menuPages ?? [];
+                        $cachedCategories = $menuCategories ?? [];
+                        $resolveUrl = function (array $item) use (&$resolveUrl, $cachedPages, $cachedCategories): ?string {
                             return match ($item['type'] ?? null) {
-                                'page' => ($p = \App\Models\Page::find($item['page_id'] ?? null))
-                                ? route('page.show', $p->slug) : null,
-                                'category' => ($c = \App\Models\Category::find($item['category_id'] ?? null))
-                                ? route('news.category', $c->slug) : null,
+                                'page' => !empty($item['page_id']) && isset($cachedPages[$item['page_id']])
+                                    ? route('page.show', $cachedPages[$item['page_id']])
+                                    : (!empty($item['page_id']) && ($p = \App\Models\Page::find($item['page_id'])) ? route('page.show', $p->slug) : null),
+                                'category' => !empty($item['category_id']) && isset($cachedCategories[$item['category_id']])
+                                    ? route('news.category', $cachedCategories[$item['category_id']])
+                                    : (!empty($item['category_id']) && ($c = \App\Models\Category::find($item['category_id'])) ? route('news.category', $c->slug) : null),
                                 'festival' => url('/') . '#festival',
                                 'url' => $item['url'] ?? '#',
                                 default => '#',
@@ -483,16 +489,25 @@
             },
         });
 
-        // Preloader Script
-        window.addEventListener('load', function () {
+        // Preloader Script - Non-blocking with DOMContentLoaded and failsafe timer
+        const hidePreloader = () => {
             const preloader = document.getElementById('site-preloader');
-            if (preloader) {
+            if (preloader && preloader.style.display !== 'none') {
+                preloader.style.transition = 'opacity 0.25s ease';
                 preloader.style.opacity = '0';
                 setTimeout(() => {
                     preloader.style.display = 'none';
-                }, 500); // Wait for transition to complete
+                }, 250);
             }
-        });
+        };
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            hidePreloader();
+        } else {
+            document.addEventListener('DOMContentLoaded', hidePreloader);
+            // Absolute failsafe: dismiss after max 1.2s regardless of external assets
+            setTimeout(hidePreloader, 1200);
+        }
     </script>
 </body>
 

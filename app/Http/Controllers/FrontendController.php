@@ -44,7 +44,7 @@ class FrontendController extends Controller
     private function getBreaking()
     {
         return Cache::remember('news:breaking', self::TTL_SHORT, fn () =>
-            News::where('is_breaking', true)->where('status', 'publish')->latest()->first()
+            News::with('category')->where('is_breaking', true)->where('status', 'publish')->latest()->first()
         );
     }
 
@@ -64,15 +64,15 @@ class FrontendController extends Controller
         $categories = $this->getCategories();
 
         $headlines = Cache::remember('news:headlines', self::TTL_SHORT, fn () =>
-            News::where('is_headline', true)->where('status', 'publish')->latest()->take(5)->get()
+            News::with('category')->where('is_headline', true)->where('status', 'publish')->latest()->take(5)->get()
         );
 
         $trending = Cache::remember('news:trending', self::TTL_SHORT, fn () =>
-            News::where('is_trending', true)->where('status', 'publish')->latest()->take(3)->get()
+            News::with('category')->where('is_trending', true)->where('status', 'publish')->latest()->take(3)->get()
         );
 
         $breaking    = $this->getBreaking();
-        $latestNews  = News::where('status', 'publish')->latest()->paginate(10);
+        $latestNews  = News::with(['category', 'user'])->where('status', 'publish')->latest()->paginate(10);
         $sidebarAds  = $this->sidebarAds();
 
         // Galleries: photo + video digabung, cache 10 menit
@@ -163,7 +163,7 @@ class FrontendController extends Controller
         );
 
         // Paginated news tidak di-cache karena tergantung query param page
-        $news       = News::where('category_id', $category->id)->where('status', 'publish')->latest()->paginate(10);
+        $news       = News::with('category')->where('category_id', $category->id)->where('status', 'publish')->latest()->paginate(10);
         $sidebarAds = $this->sidebarAds();
 
         return view('news.category', compact('setting', 'categories', 'breaking', 'category', 'news', 'sidebarAds'));

@@ -124,6 +124,8 @@
                         <img
                             src="{{ asset('storage/' . $setting->sambutan_foto_kepala) }}"
                             alt="{{ $setting->sambutan_nama_kepala ?? 'Kepala Dinas' }}"
+                            loading="lazy"
+                            decoding="async"
                             class="w-full h-52 sm:h-full object-cover object-top"
                         >
                     @else
@@ -321,6 +323,8 @@
                                     class="w-full h-full block cursor-zoom-in focus:outline-none">
                                 <img src="{{ asset('storage/' . $destination->image) }}"
                                      alt="{{ $destination->name }}"
+                                     loading="lazy"
+                                     decoding="async"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 {{-- Hover zoom hint --}}
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-all duration-300 flex items-center justify-center">
@@ -515,10 +519,10 @@
                 <div class="swiper-slide">
                     @if($slider->url)
                         <a href="{{ $slider->url }}" target="_blank" class="block w-full">
-                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto">
+                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" loading="lazy" decoding="async" class="w-full h-auto">
                         </a>
                     @else
-                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" class="w-full h-auto">
+                        <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->title }}" loading="lazy" decoding="async" class="w-full h-auto">
                     @endif
                 </div>
                 @endforeach
@@ -568,7 +572,7 @@
                 @foreach($latestNews as $news)
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
                     <div class="w-full sm:w-1/3 shrink-0 overflow-hidden rounded-lg shadow-sm">
-                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
+                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" loading="lazy" decoding="async" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="flex-1">
                         <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category->name }}</span>
@@ -740,7 +744,7 @@
                 @if($gallery->video_url)
                     @if($gallery->image)
                         {{-- Thumbnail + play button → buka modal iframe --}}
-                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         <div class="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
                             <i class="fas fa-play-circle text-4xl text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition"></i>
                         </div>
@@ -758,7 +762,7 @@
                     @endif
                 @else
                     <a href="{{ asset('storage/' . $gallery->image) }}" target="_blank" class="block w-full h-full">
-                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <img src="{{ asset('storage/' . $gallery->image) }}" alt="{{ $gallery->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-4">
                             <h4 class="text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition duration-300">{{ $gallery->title }}</h4>
                         </div>

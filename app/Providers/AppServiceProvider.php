@@ -42,6 +42,13 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
+        // Cache menu pages & categories mapping to avoid N+1 queries in Blade navigation
+        \Illuminate\Support\Facades\View::composer('layouts.frontend', function ($view) {
+            $menuPages = \Illuminate\Support\Facades\Cache::remember('menu:pages_map', 3600, fn() => \App\Models\Page::pluck('slug', 'id'));
+            $menuCategories = \Illuminate\Support\Facades\Cache::remember('menu:categories_map', 3600, fn() => \App\Models\Category::pluck('slug', 'id'));
+            $view->with('menuPages', $menuPages)->with('menuCategories', $menuCategories);
+        });
+
         // Log successful login & run threat analysis
         Event::listen(Login::class, function (Login $event) {
             $ip = Request::ip();
