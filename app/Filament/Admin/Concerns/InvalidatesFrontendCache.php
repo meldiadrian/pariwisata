@@ -28,6 +28,7 @@ trait InvalidatesFrontendCache
         Cache::forget('categories:with_count');
         Cache::forget('news:breaking');
         Cache::forget('ads:sidebar');
+        app(\App\Services\PageCacheService::class)->flush();
     }
 
     /**
@@ -44,6 +45,7 @@ trait InvalidatesFrontendCache
         foreach ($keys as $key) {
             Cache::forget($key);
         }
+        app(\App\Services\PageCacheService::class)->flush();
     }
 
     /**
@@ -59,6 +61,7 @@ trait InvalidatesFrontendCache
         foreach ($keys as $key) {
             Cache::forget($key);
         }
+        app(\App\Services\PageCacheService::class)->flush();
     }
 
     /**
@@ -69,5 +72,6 @@ trait InvalidatesFrontendCache
         foreach ($this->getFrontendCacheKeys() as $key) {
             Cache::forget($key);
         }
+        app(\App\Services\PageCacheService::class)->flush();
     }
 }

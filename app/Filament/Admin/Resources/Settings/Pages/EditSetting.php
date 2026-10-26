@@ -37,6 +37,7 @@ class EditSetting extends EditRecord
         Cache::forget('setting:first');
         Cache::forget('categories:with_count');
         Cache::forget('news:breaking');
+        app(\App\Services\PageCacheService::class)->flush();
         
         // Update maintenance started timestamp if enabled
         if ($this->record->maintenance_mode && $this->record->isDirty('maintenance_mode')) {

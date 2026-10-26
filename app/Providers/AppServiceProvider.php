@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Bind ThreatDetectionService as a singleton
         $this->app->singleton(ThreatDetectionService::class);
+        $this->app->singleton(\App\Services\PageCacheService::class);
     }
 
     public function boot(): void
@@ -48,6 +49,37 @@ class AppServiceProvider extends ServiceProvider
             $menuCategories = \Illuminate\Support\Facades\Cache::remember('menu:categories_map', 3600, fn() => \App\Models\Category::pluck('slug', 'id'));
             $view->with('menuPages', $menuPages)->with('menuCategories', $menuCategories);
         });
+
+        // Auto-flush page cache dan menu cache saat konten publik mengalami perubahan/dihapus
+        $contentModels = [
+            \App\Models\News::class,
+            \App\Models\Category::class,
+            \App\Models\Page::class,
+            \App\Models\Setting::class,
+            \App\Models\Slider::class,
+            \App\Models\Festival::class,
+            \App\Models\Advertisement::class,
+            \App\Models\PhotoGallery::class,
+            \App\Models\Video::class,
+            \App\Models\Destination::class,
+            \App\Models\DestinationCategory::class,
+            \App\Models\Tag::class,
+        ];
+
+        foreach ($contentModels as $modelClass) {
+            if (class_exists($modelClass)) {
+                $modelClass::saved(function () {
+                    \Illuminate\Support\Facades\Cache::forget('menu:pages_map');
+                    \Illuminate\Support\Facades\Cache::forget('menu:categories_map');
+                    app(\App\Services\PageCacheService::class)->flush();
+                });
+                $modelClass::deleted(function () {
+                    \Illuminate\Support\Facades\Cache::forget('menu:pages_map');
+                    \Illuminate\Support\Facades\Cache::forget('menu:categories_map');
+                    app(\App\Services\PageCacheService::class)->flush();
+                });
+            }
+        }
 
         // Log successful login & run threat analysis
         Event::listen(Login::class, function (Login $event) {

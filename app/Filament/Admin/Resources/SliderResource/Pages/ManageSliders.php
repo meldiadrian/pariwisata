@@ -21,5 +21,6 @@ class ManageSliders extends ManageRecords
     protected function afterSave(): void
     {
         Cache::forget('sliders:active');
+        app(\App\Services\PageCacheService::class)->flush();
     }
 }

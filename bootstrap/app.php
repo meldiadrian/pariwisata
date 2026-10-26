@@ -21,9 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\PreventExcessiveRefresh::class,
         ]);
         
-        // Middleware untuk throttle login gagal (hanya untuk route tertentu)
+        // Middleware alias
         $middleware->alias([
             'throttle.login' => \App\Http\Middleware\ThrottleFailedLogins::class,
+            'page.cache'     => \App\Http\Middleware\PageCacheMiddleware::class,
         ]);
         
         $middleware->trustProxies(at: '*');
