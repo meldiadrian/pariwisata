@@ -14,10 +14,12 @@
         <img 
             src="{{ $src }}" 
             alt="{{ $alt }}"
+            decoding="async"
             @if($class) class="{{ $class }}" @endif
             @if($width) width="{{ $width }}" @endif
             @if($height) height="{{ $height }}" @endif
             @if($lazy) loading="lazy" @endif
+            @if($fetchpriority) fetchpriority="{{ $fetchpriority }}" @endif
         >
     </picture>
 @endif

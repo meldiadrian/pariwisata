@@ -32,4 +32,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH C:\laragon\www\wisataok\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions/views/minimal.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\wisata-dispora\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions/views/minimal.blade.php ENDPATH**/ ?>

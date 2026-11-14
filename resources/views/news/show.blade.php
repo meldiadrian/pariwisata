@@ -11,6 +11,7 @@
                     <li class="inline-flex items-center">
                         <a href="{{ route('home') }}" class="hover:text-red-700">Home</a>
                     </li>
+                    @if($news->category)
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-[10px] mx-2"></i>
@@ -18,6 +19,7 @@
                                 class="hover:text-red-700">{{ $news->category->name }}</a>
                         </div>
                     </li>
+                    @endif
                 </ol>
             </nav>
 
@@ -25,9 +27,9 @@
 
             <div class="flex flex-wrap items-center text-xs sm:text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100 gap-x-4 gap-y-2">
                 <div class="flex items-center">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($news->user->name) }}&color=7F9CF5&background=EBF4FF"
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($news->user?->name ?? 'Admin') }}&color=7F9CF5&background=EBF4FF"
                         class="w-7 h-7 rounded-full mr-2 flex-shrink-0" style="width:28px;height:28px;max-width:28px;">
-                    <span>Oleh <span class="font-bold text-gray-900">{{ $news->user->name }}</span></span>
+                    <span>Oleh <span class="font-bold text-gray-900">{{ $news->user?->name ?? 'Admin' }}</span></span>
                 </div>
                 <span><i class="far fa-clock mr-1"></i> {{ optional($news->published_at)->translatedFormat('d M Y') }}</span>
                 <span><i class="far fa-eye mr-1"></i> {{ number_format($news->views) }} views</span>
@@ -40,7 +42,7 @@
             @endif
 
             <div class="prose prose-sm sm:prose lg:prose-lg max-w-none mb-12 text-gray-800 leading-relaxed">
-                {!! $news->content !!}
+                {!! app(\App\Services\ContentImageService::class)->optimizeHtmlImages($news->content) !!}
             </div>
 
             <!-- Tags -->
@@ -57,22 +59,28 @@
             </div>
 
             <!-- Share Section -->
-            <div
+            @php
+                $shareUrl = urlencode(url()->current());
+                $shareText = urlencode($news->title);
+            @endphp
+            <div x-data="{ copied: false }"
                 class="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col md:flex-row justify-between items-center mb-12">
                 <span class="font-bold mb-4 md:mb-0">BAGIKAN ARTIKEL INI:</span>
-                <div class="flex space-x-2">
-                    <a href="#"
+                <div class="flex items-center space-x-2">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke Facebook"
                         class="bg-[#1877F2] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-facebook-f"></i></a>
-                    <a href="#"
+                    <a href="https://twitter.com/intent/tweet?url={{ $shareUrl }}&text={{ $shareText }}" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke Twitter"
                         class="bg-[#1DA1F2] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-twitter"></i></a>
-                    <a href="#"
+                    <a href="https://wa.me/?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke WhatsApp"
                         class="bg-[#25D366] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-whatsapp"></i></a>
-                    <a href="#"
+                    <button type="button" aria-label="Salin tautan artikel"
+                        @click="navigator.clipboard?.writeText(@js(url()->current())); copied = true; setTimeout(() => copied = false, 2000)"
                         class="bg-gray-800 text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
-                            class="fas fa-link"></i></a>
+                            class="fas fa-link"></i></button>
+                    <span x-show="copied" x-transition class="text-xs font-semibold text-green-700" style="display:none;">Tersalin!</span>
                 </div>
             </div>
 
@@ -102,7 +110,7 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full max-w-[275px] mx-auto">
                 <h3 class="font-bold mb-6 border-l-4 border-red-700 pl-3 uppercase">Paling Populer</h3>
                 <div class="space-y-6">
-                    @foreach(\App\Models\News::where('status', 'publish')->orderBy('views', 'desc')->take(5)->get() as $index => $popular)
+                    @foreach(($popularNews ?? collect()) as $index => $popular)
                         <div class="flex space-x-4 items-start group">
                             <span
                                 class="text-2xl font-black text-gray-200 group-hover:text-red-700 transition">{{ $index + 1 }}</span>

@@ -4,28 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $__env->yieldContent('title', $setting->site_name ?? 'Portal Berita'); ?></title>
+    <title><?php echo $__env->yieldContent('title', $setting?->site_name ?? 'Portal Berita'); ?></title>
 
-    <meta name="description" content="<?php echo $__env->yieldContent('description', $setting->tagline ?? 'Portal Berita'); ?>">
+    <meta name="description" content="<?php echo $__env->yieldContent('description', $setting?->tagline ?? 'Portal Berita'); ?>">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="<?php echo e($setting->site_name ?? 'Portal Berita'); ?>">
-    <meta property="og:title" content="<?php echo $__env->yieldContent('title', $setting->site_name ?? 'Portal Berita'); ?>">
-    <meta property="og:description" content="<?php echo $__env->yieldContent('description', $setting->tagline ?? 'Portal Berita'); ?>">
+    <meta property="og:site_name" content="<?php echo e($setting?->site_name ?? 'Portal Berita'); ?>">
+    <meta property="og:title" content="<?php echo $__env->yieldContent('title', $setting?->site_name ?? 'Portal Berita'); ?>">
+    <meta property="og:description" content="<?php echo $__env->yieldContent('description', $setting?->tagline ?? 'Portal Berita'); ?>">
     <meta property="og:url" content="<?php echo e(url()->current()); ?>">
     <meta property="og:image"
-        content="<?php echo e(!empty($setting->logo) ? asset('storage/' . $setting->logo) : asset('storage/lg-wisata.png')); ?>">
+        content="<?php echo e(!empty($setting?->logo) ? asset('storage/' . $setting->logo) : asset('storage/lg-wisata.png')); ?>">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="canonical" href="<?php echo e(url()->current()); ?>">
     <meta name="theme-color" content="#b91c1c">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -89,29 +92,6 @@
 <body class="bg-gray-50 text-gray-900 overflow-x-hidden" x-data="{ scrolled: false }"
     @scroll.window="scrolled = (window.pageYOffset > 300) ? true : false">
 
-    <!-- Preloader -->
-    <div id="site-preloader"
-        class="fixed inset-0 z-[9999] bg-white flex items-center justify-center transition-opacity duration-300">
-        <div class="relative flex items-center justify-center">
-            <!-- Donut Spinner -->
-            <div class="w-24 h-24 border-4 border-gray-200 border-t-red-700 rounded-full animate-spin"></div>
-            <!-- Logo in Center -->
-            <div class="absolute inset-0 flex items-center justify-center">
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->logo)): ?>
-                    <img src="<?php echo e(asset('storage/' . $setting->logo)); ?>" alt="Logo"
-                        class="h-10 w-auto max-w-full max-h-full object-contain animate-pulse">
-                <?php else: ?>
-                    <div
-                        class="h-10 w-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center flex-shrink-0 animate-pulse">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                        </svg>
-                    </div>
-                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-            </div>
-        </div>
-    </div>
-
     <!-- Topbar -->
     <div class="bg-red-700 text-white py-2 text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-3 min-w-0">
@@ -127,13 +107,23 @@
                         class="hover:underline truncate block min-w-0"><?php echo e($breaking->title); ?></a>
                 </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-            <div class="flex items-center space-x-4 ml-auto shrink-0">
-                <a href="https://www.facebook.com/profile.php?id=100083774987735"
-                    class="hover:text-yellow-300 transition-colors"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="hover:text-yellow-300 transition-colors"><i class="fab fa-youtube"></i></a>
-                <a href="https://www.instagram.com/pariwisatabks_official/"
-                    class="hover:text-yellow-300 transition-colors"><i class="fab fa-instagram"></i></a>
-            </div>
+            <?php
+                $socialLinks = array_filter([
+                    ['url' => $setting?->facebook, 'icon' => 'fab fa-facebook', 'label' => 'Facebook'],
+                    ['url' => $setting?->youtube, 'icon' => 'fab fa-youtube', 'label' => 'YouTube'],
+                    ['url' => $setting?->instagram, 'icon' => 'fab fa-instagram', 'label' => 'Instagram'],
+                ], fn ($item) => !empty($item['url']));
+            ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($socialLinks)): ?>
+                <div class="flex items-center space-x-4 ml-auto shrink-0">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $socialLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $social): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <a href="<?php echo e($social['url']); ?>" target="_blank" rel="noopener noreferrer"
+                            aria-label="<?php echo e($social['label']); ?>" class="hover:text-yellow-300 transition-colors">
+                            <i class="<?php echo e($social['icon']); ?>"></i>
+                        </a>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                </div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>
 
@@ -143,10 +133,10 @@
             <div class="flex justify-between items-center py-3 gap-2 min-w-0">
                 
                 <a href="<?php echo e(route('home')); ?>" class="flex items-center gap-2 sm:gap-3 group shrink-0 min-w-0">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->logo)): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting?->logo)): ?>
                         <?php if (isset($component)) { $__componentOriginale75524dba4ffced2baa5b8fd1d6ea996 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996 = $attributes; } ?>
-<?php $component = App\View\Components\ResponsiveImage::resolve(['src' => $setting->logo,'alt' => $setting->site_name ?? 'Logo','class' => 'h-10 sm:h-14 w-24 sm:w-32 object-contain flex-shrink-0 drop-shadow-sm group-hover:scale-105 transition-transform duration-200','lazy' => false] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = App\View\Components\ResponsiveImage::resolve(['src' => $setting->logo,'alt' => $setting?->site_name ?? 'Logo','class' => 'h-10 sm:h-14 w-24 sm:w-32 object-contain flex-shrink-0 drop-shadow-sm group-hover:scale-105 transition-transform duration-200','sizes' => ['small' => 300, 'medium' => 600],'lazy' => false,'fetchpriority' => 'high'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('responsive-image'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
@@ -180,12 +170,17 @@
                     <div class="leading-tight min-w-0">
                         <div
                             class="text-sm sm:text-base font-extrabold tracking-wide text-red-700 leading-none truncate">
-                            <?php echo e($setting->site_name ?? 'PORTAL BERITA'); ?>
+                            <?php echo e($setting?->site_name ?? 'PORTAL BERITA'); ?>
 
                         </div>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->tagline ?? $setting->address)): ?>
+                        <?php
+                            $siteSubtitle = !empty($setting?->tagline)
+                                ? $setting->tagline
+                                : (!empty($setting?->address) ? \Illuminate\Support\Str::words($setting->address, 4, '') : null);
+                        ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($siteSubtitle)): ?>
                             <div class="text-xs font-medium text-gray-500 mt-0.5 leading-snug truncate">
-                                <?php echo e($setting->tagline ?? \Illuminate\Support\Str::words($setting->address ?? '', 4, '')); ?>
+                                <?php echo e($siteSubtitle); ?>
 
                             </div>
                         <?php else: ?>
@@ -206,18 +201,18 @@
                             return match ($item['type'] ?? null) {
                                 'page' => !empty($item['page_id']) && isset($cachedPages[$item['page_id']])
                                     ? route('page.show', $cachedPages[$item['page_id']])
-                                    : (!empty($item['page_id']) && ($p = \App\Models\Page::find($item['page_id'])) ? route('page.show', $p->slug) : null),
+                                    : null,
                                 'category' => !empty($item['category_id']) && isset($cachedCategories[$item['category_id']])
                                     ? route('news.category', $cachedCategories[$item['category_id']])
-                                    : (!empty($item['category_id']) && ($c = \App\Models\Category::find($item['category_id'])) ? route('news.category', $c->slug) : null),
+                                    : null,
                                 'festival' => url('/') . '#festival',
-                                'url' => $item['url'] ?? '#',
+                                'url' => \App\Models\Setting::normalizeInternalUrl($item['url'] ?? null) ?? '#',
                                 default => '#',
                             };
                         };
                     ?>
 
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->main_menu) && is_array($setting->main_menu)): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting?->main_menu) && is_array($setting->main_menu)): ?>
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $setting->main_menu; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menuItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                             <?php
                                 $hasChildren = !empty($menuItem['children']) && is_array($menuItem['children']);
@@ -325,12 +320,11 @@
                     <a href="<?php echo e(url('/')); ?>#galeri" class="px-3 py-2 rounded hover:text-red-700 transition">Galeri</a>
                 </nav>
 
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-red-700"><i class="x-search"></i></button>
-
+                <div class="flex items-center lg:hidden">
                     
                     <button @click="mobileOpen = !mobileOpen"
-                        class="lg:hidden text-gray-600 hover:text-red-700 focus:outline-none">
+                        aria-label="Toggle navigation menu"
+                        class="text-gray-600 hover:text-red-700 focus:outline-none">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -348,7 +342,7 @@
                 x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
                 class="lg:hidden border-t border-gray-100 py-3 space-y-1" style="display:none;">
 
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->main_menu) && is_array($setting->main_menu)): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting?->main_menu) && is_array($setting->main_menu)): ?>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $setting->main_menu; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menuItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <?php
                             $hasChildren = !empty($menuItem['children']) && is_array($menuItem['children']);
@@ -448,18 +442,41 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8 border-b border-gray-800 pb-8">
                 <div class="col-span-1 md:col-span-1">
-                    <h2 class="text-sm font-bold mb-4 text-red-500"><?php echo e($setting->site_name ?? 'NEWS PORTAL'); ?></h2>
-                    <!------<p class="text-gray-400 text-sm mb-4"><?php echo e('Jl. Arief Rahman No.24, Bengkalis Kota, Kec. Bengkalis
-'); ?></p> -->
+                    <h2 class="text-sm font-bold mb-4 text-red-500"><?php echo e($setting?->site_name ?? 'NEWS PORTAL'); ?></h2>
 
-                    <img src="<?php echo e(asset('storage/lg-wisata.png')); ?>" alt="Logo" class="mb-4 w-32 h-auto rounded-xl">
+                    <?php if (isset($component)) { $__componentOriginale75524dba4ffced2baa5b8fd1d6ea996 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996 = $attributes; } ?>
+<?php $component = App\View\Components\ResponsiveImage::resolve(['src' => 'lg-wisata.png','alt' => 'Logo','class' => 'mb-4 w-32 h-auto rounded-xl','sizes' => ['small' => 300, 'medium' => 600],'lazy' => true] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('responsive-image'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\ResponsiveImage::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-                    <div class="flex space-x-4">
-                        <a href="https://www.facebook.com/profile.php?id=100083774987735"><i
-                                class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="https://www.instagram.com/pariwisatabks_official/"><i class="fab fa-instagram"></i></a>
-                    </div>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996)): ?>
+<?php $attributes = $__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996; ?>
+<?php unset($__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginale75524dba4ffced2baa5b8fd1d6ea996)): ?>
+<?php $component = $__componentOriginale75524dba4ffced2baa5b8fd1d6ea996; ?>
+<?php unset($__componentOriginale75524dba4ffced2baa5b8fd1d6ea996); ?>
+<?php endif; ?>
+
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($socialLinks)): ?>
+                        <div class="flex space-x-4">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $socialLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $social): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <a href="<?php echo e($social['url']); ?>" target="_blank" rel="noopener noreferrer"
+                                    aria-label="<?php echo e($social['label']); ?>" class="hover:text-red-400 transition-colors">
+                                    <i class="<?php echo e($social['icon']); ?>"></i>
+                                </a>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 </div>
                 <div>
@@ -494,9 +511,8 @@
             </div>
         </div>
         <div class="text-center text-gray-500 text-xs">
-            &copy; <?php echo e(date('Y')); ?> <?php echo e($setting->site_name ?? 'News Portal'); ?>. All rights reserved.
+            &copy; <?php echo e(date('Y')); ?> <?php echo e($setting?->site_name ?? 'News Portal'); ?>. All rights reserved.
             <br>Dikembangkan oleh TIM IT Diskominfotik Kab. Bengkalis
-        </div>
         </div>
     </footer>
 
@@ -506,43 +522,26 @@
         <i class="fas fa-arrow-up text-sm sm:text-base"></i>
     </button>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const swiper = new Swiper('.hero-swiper', {
-            loop: true,
-            autoplay: {
-                delay: 5000
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev'
-            },
-        });
-
-        // Preloader Script - Non-blocking with DOMContentLoaded and failsafe timer
-        const hidePreloader = () => {
-            const preloader = document.getElementById('site-preloader');
-            if (preloader && preloader.style.display !== 'none') {
-                preloader.style.transition = 'opacity 0.25s ease';
-                preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 250);
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Swiper !== 'undefined' && document.querySelector('.hero-swiper')) {
+                new Swiper('.hero-swiper', {
+                    loop: true,
+                    autoplay: {
+                        delay: 5000
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
+                    },
+                });
             }
-        };
-
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            hidePreloader();
-        } else {
-            document.addEventListener('DOMContentLoaded', hidePreloader);
-            // Absolute failsafe: dismiss after max 1.2s regardless of external assets
-            setTimeout(hidePreloader, 1200);
-        }
+        });
     </script>
 </body>
 
-</html><?php /**PATH C:\laragon\www\wisataok\resources\views/layouts/frontend.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\laragon\www\wisata-dispora\resources\views/layouts/frontend.blade.php ENDPATH**/ ?>

@@ -41,6 +41,7 @@ class EditNews extends EditRecord
             'news:headlines',
             'news:trending',
             'news:breaking',
+            'news:popular',
             'galleries:home',
         ];
 

@@ -7,11 +7,69 @@ use Illuminate\Support\Facades\Storage;
 class ImageHelper
 {
     /**
-     * Get WebP version of image path if it exists and browser supports it
+     * Per-request memoization for storage existence checks.
      *
-     * @param string|null $imagePath
-     * @param bool $checkBrowserSupport
-     * @return string|null
+     * @var array<string, bool>
+     */
+    private static array $existsCache = [];
+
+    /**
+     * Normalize a relative path, /storage/... path, or same-app storage URL into a
+     * storage-relative path. Returns null for external URLs or data URIs.
+     */
+    private static function normalizeStoragePath(?string $imagePath): ?string
+    {
+        if (!$imagePath) {
+            return null;
+        }
+
+        if (str_starts_with($imagePath, 'data:')) {
+            return null;
+        }
+
+        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+            $parsedPath = parse_url($imagePath, PHP_URL_PATH);
+            if (!is_string($parsedPath) || !str_starts_with($parsedPath, '/storage/')) {
+                return null;
+            }
+            return ltrim(substr($parsedPath, strlen('/storage/')), '/');
+        }
+
+        if (str_starts_with($imagePath, '/storage/')) {
+            return ltrim(substr($imagePath, strlen('/storage/')), '/');
+        }
+
+        return ltrim($imagePath, '/');
+    }
+
+    /**
+     * Check whether a storage-relative path exists in either storage/app/public or public/storage.
+     */
+    private static function storageFileExists(string $relativePath): bool
+    {
+        $relativePath = ltrim($relativePath, '/');
+
+        if (isset(self::$existsCache[$relativePath])) {
+            return self::$existsCache[$relativePath];
+        }
+
+        $exists = Storage::disk('public')->exists($relativePath)
+            || is_file(public_path('storage/' . $relativePath));
+
+        return self::$existsCache[$relativePath] = $exists;
+    }
+
+    private static function joinDirectory(?string $dir, string $file): string
+    {
+        if ($dir === null || $dir === '' || $dir === '.') {
+            return $file;
+        }
+
+        return trim($dir, '/') . '/' . $file;
+    }
+
+    /**
+     * Get WebP version of image path if it exists and browser supports it.
      */
     public static function getWebPPath(?string $imagePath, bool $checkBrowserSupport = true): ?string
     {
@@ -19,35 +77,35 @@ class ImageHelper
             return null;
         }
 
-        // If browser doesn't support WebP, return original
         if ($checkBrowserSupport && !self::browserSupportsWebP()) {
             return $imagePath;
         }
 
-        $pathInfo = pathinfo($imagePath);
-        
-        // If already WebP, return as is
-        if (isset($pathInfo['extension']) && strtolower($pathInfo['extension']) === 'webp') {
+        $relativePath = self::normalizeStoragePath($imagePath);
+        if ($relativePath === null) {
             return $imagePath;
         }
 
-        // Check if WebP version exists
-        $webpPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '.webp';
-        
-        if (Storage::disk('public')->exists($webpPath)) {
+        $pathInfo = pathinfo($relativePath);
+        if (empty($pathInfo['filename'])) {
+            return $imagePath;
+        }
+
+        if (isset($pathInfo['extension']) && strtolower($pathInfo['extension']) === 'webp') {
+            return $relativePath;
+        }
+
+        $webpPath = self::joinDirectory($pathInfo['dirname'] ?? null, $pathInfo['filename'] . '.webp');
+
+        if (self::storageFileExists($webpPath)) {
             return $webpPath;
         }
 
-        // Return original if WebP doesn't exist
         return $imagePath;
     }
 
     /**
-     * Get sized version of image
-     *
-     * @param string|null $imagePath
-     * @param string $size (thumbnail, small, medium, large, xlarge)
-     * @return string|null
+     * Get sized version of image.
      */
     public static function getSizedImage(?string $imagePath, string $size = 'medium'): ?string
     {
@@ -55,30 +113,31 @@ class ImageHelper
             return null;
         }
 
-        $pathInfo = pathinfo($imagePath);
+        $relativePath = self::normalizeStoragePath($imagePath);
+        if ($relativePath === null) {
+            return $imagePath;
+        }
 
-        // Guard: path must have a valid extension and filename
+        $pathInfo = pathinfo($relativePath);
+
         if (empty($pathInfo['extension']) || empty($pathInfo['filename'])) {
             return $imagePath;
         }
 
-        $sizedPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_' . $size . '.' . $pathInfo['extension'];
+        $sizedPath = self::joinDirectory(
+            $pathInfo['dirname'] ?? null,
+            $pathInfo['filename'] . '_' . $size . '.' . $pathInfo['extension']
+        );
 
-        if (Storage::disk('public')->exists($sizedPath)) {
+        if (self::storageFileExists($sizedPath)) {
             return $sizedPath;
         }
 
-        // Return original if sized version doesn't exist
         return $imagePath;
     }
 
     /**
-     * Get WebP sized version of image
-     *
-     * @param string|null $imagePath
-     * @param string $size
-     * @param bool $checkBrowserSupport
-     * @return string|null
+     * Get WebP sized version of image.
      */
     public static function getWebPSizedImage(?string $imagePath, string $size = 'medium', bool $checkBrowserSupport = true): ?string
     {
@@ -90,21 +149,30 @@ class ImageHelper
             return self::getSizedImage($imagePath, $size);
         }
 
-        $pathInfo = pathinfo($imagePath);
-        $webpSizedPath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '_' . $size . '.webp';
+        $relativePath = self::normalizeStoragePath($imagePath);
+        if ($relativePath === null) {
+            return $imagePath;
+        }
 
-        if (Storage::disk('public')->exists($webpSizedPath)) {
+        $pathInfo = pathinfo($relativePath);
+        if (empty($pathInfo['filename'])) {
+            return $imagePath;
+        }
+
+        $webpSizedPath = self::joinDirectory(
+            $pathInfo['dirname'] ?? null,
+            $pathInfo['filename'] . '_' . $size . '.webp'
+        );
+
+        if (self::storageFileExists($webpSizedPath)) {
             return $webpSizedPath;
         }
 
-        // Fallback to regular WebP
-        return self::getWebPPath($imagePath, false);
+        return self::getWebPPath($relativePath, false);
     }
 
     /**
-     * Check if browser supports WebP
-     *
-     * @return bool
+     * Check if browser supports WebP.
      */
     public static function browserSupportsWebP(): bool
     {
@@ -113,10 +181,7 @@ class ImageHelper
     }
 
     /**
-     * Get full URL for image path
-     *
-     * @param string|null $imagePath
-     * @return string|null
+     * Get full URL for image path.
      */
     public static function getImageUrl(?string $imagePath): ?string
     {
@@ -124,20 +189,19 @@ class ImageHelper
             return null;
         }
 
-        // If already a full URL, return as is
-        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
+        if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://') || str_starts_with($imagePath, 'data:')) {
             return $imagePath;
+        }
+
+        if (str_starts_with($imagePath, '/storage/')) {
+            return asset(ltrim($imagePath, '/'));
         }
 
         return Storage::disk('public')->url($imagePath);
     }
 
     /**
-     * Get WebP URL with fallback
-     *
-     * @param string|null $imagePath
-     * @param bool $checkBrowserSupport
-     * @return string|null
+     * Get WebP URL with fallback.
      */
     public static function getWebPUrl(?string $imagePath, bool $checkBrowserSupport = true): ?string
     {
@@ -146,11 +210,7 @@ class ImageHelper
     }
 
     /**
-     * Generate srcset for responsive images
-     *
-     * @param string|null $imagePath
-     * @param array $sizes ['thumbnail' => 150, 'medium' => 600, 'large' => 1200]
-     * @return string
+     * Generate srcset for responsive images.
      */
     public static function generateSrcSet(?string $imagePath, array $sizes = []): string
     {
@@ -166,34 +226,35 @@ class ImageHelper
             ];
         }
 
+        $baseWebp = self::getWebPPath($imagePath, false);
+        $baseWebpUrl = $baseWebp ? self::getImageUrl($baseWebp) : null;
         $srcset = [];
-        
+        $hasSizedVariant = false;
+
         foreach ($sizes as $sizeName => $width) {
-            $sizedImage = self::getWebPSizedImage($imagePath, $sizeName);
-            if ($sizedImage) {
+            $sizedImage = self::getWebPSizedImage($imagePath, $sizeName, false);
+            if ($sizedImage && $sizedImage !== $baseWebp) {
                 $url = self::getImageUrl($sizedImage);
-                $srcset[] = "{$url} {$width}w";
+                if ($url && $url !== $baseWebpUrl) {
+                    $srcset[] = "{$url} {$width}w";
+                    $hasSizedVariant = true;
+                }
             }
         }
 
-        // Add original image
-        $originalUrl = self::getWebPUrl($imagePath);
-        if ($originalUrl) {
-            $srcset[] = "{$originalUrl} 2000w";
+        if (!$hasSizedVariant) {
+            return '';
         }
 
-        return implode(', ', $srcset);
+        if ($baseWebpUrl) {
+            $srcset[] = "{$baseWebpUrl} 2000w";
+        }
+
+        return implode(', ', array_unique($srcset));
     }
 
     /**
-     * Get picture element HTML with WebP and fallback
-     *
-     * @param string|null $imagePath
-     * @param string $alt
-     * @param string $class
-     * @param array $sizes
-     * @param bool $lazy
-     * @return string
+     * Get picture element HTML with WebP and fallback.
      */
     public static function getPictureHtml(
         ?string $imagePath,
@@ -209,21 +270,19 @@ class ImageHelper
         $webpPath = self::getWebPPath($imagePath, false);
         $webpUrl = self::getImageUrl($webpPath);
         $originalUrl = self::getImageUrl($imagePath);
-        
+
         $loadingAttr = $lazy ? ' loading="lazy"' : '';
-        
+
         $html = '<picture>';
-        
-        // WebP source with srcset if available
+
         if ($webpPath && $webpPath !== $imagePath) {
             $srcset = !empty($sizes) ? self::generateSrcSet($imagePath, $sizes) : $webpUrl;
             $html .= "<source type=\"image/webp\" srcset=\"{$srcset}\">";
         }
-        
-        // Fallback img tag
-        $html .= "<img src=\"{$originalUrl}\" alt=\"{$alt}\" class=\"{$class}\"{$loadingAttr}>";
+
+        $html .= "<img src=\"{$originalUrl}\" alt=\"{$alt}\" class=\"{$class}\" decoding=\"async\"{$loadingAttr}>";
         $html .= '</picture>';
-        
+
         return $html;
     }
 }

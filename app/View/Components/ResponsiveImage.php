@@ -19,6 +19,7 @@ class ResponsiveImage extends Component
     public bool $useWebP;
     public ?string $webpSrc;
     public ?string $srcset;
+    public ?string $fetchpriority;
 
     /**
      * Create a new component instance.
@@ -31,7 +32,8 @@ class ResponsiveImage extends Component
         ?string $height = null,
         bool $lazy = true,
         array $sizes = [],
-        bool $useWebp = true
+        bool $useWebp = true,
+        ?string $fetchpriority = null
     ) {
         $this->src = $src;
         $this->alt = $alt;
@@ -41,6 +43,7 @@ class ResponsiveImage extends Component
         $this->lazy = $lazy;
         $this->sizes = $sizes;
         $this->useWebP = $useWebp;
+        $this->fetchpriority = $fetchpriority;
 
         // Generate WebP version if enabled
         if ($useWebp && $src) {

@@ -68,16 +68,21 @@ class AppServiceProvider extends ServiceProvider
 
         foreach ($contentModels as $modelClass) {
             if (class_exists($modelClass)) {
-                $modelClass::saved(function () {
+                $flushModelCaches = function ($model): void {
                     \Illuminate\Support\Facades\Cache::forget('menu:pages_map');
                     \Illuminate\Support\Facades\Cache::forget('menu:categories_map');
+                    if ($model instanceof \App\Models\News) {
+                        \Illuminate\Support\Facades\Cache::forget('news:popular');
+                        if (!empty($model->slug)) {
+                            \Illuminate\Support\Facades\Cache::forget("news:slug:{$model->slug}");
+                        }
+                    } elseif ($model instanceof \App\Models\Page && !empty($model->slug)) {
+                        \Illuminate\Support\Facades\Cache::forget("page:slug:{$model->slug}");
+                    }
                     app(\App\Services\PageCacheService::class)->flush();
-                });
-                $modelClass::deleted(function () {
-                    \Illuminate\Support\Facades\Cache::forget('menu:pages_map');
-                    \Illuminate\Support\Facades\Cache::forget('menu:categories_map');
-                    app(\App\Services\PageCacheService::class)->flush();
-                });
+                };
+                $modelClass::saved($flushModelCaches);
+                $modelClass::deleted($flushModelCaches);
             }
         }
 

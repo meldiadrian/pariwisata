@@ -9,6 +9,7 @@
                     <li class="inline-flex items-center">
                         <a href="<?php echo e(route('home')); ?>" class="hover:text-red-700">Home</a>
                     </li>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($news->category): ?>
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-[10px] mx-2"></i>
@@ -16,6 +17,7 @@
                                 class="hover:text-red-700"><?php echo e($news->category->name); ?></a>
                         </div>
                     </li>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </ol>
             </nav>
 
@@ -23,9 +25,9 @@
 
             <div class="flex flex-wrap items-center text-xs sm:text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100 gap-x-4 gap-y-2">
                 <div class="flex items-center">
-                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode($news->user->name)); ?>&color=7F9CF5&background=EBF4FF"
+                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode($news->user?->name ?? 'Admin')); ?>&color=7F9CF5&background=EBF4FF"
                         class="w-7 h-7 rounded-full mr-2 flex-shrink-0" style="width:28px;height:28px;max-width:28px;">
-                    <span>Oleh <span class="font-bold text-gray-900"><?php echo e($news->user->name); ?></span></span>
+                    <span>Oleh <span class="font-bold text-gray-900"><?php echo e($news->user?->name ?? 'Admin'); ?></span></span>
                 </div>
                 <span><i class="far fa-clock mr-1"></i> <?php echo e(optional($news->published_at)->translatedFormat('d M Y')); ?></span>
                 <span><i class="far fa-eye mr-1"></i> <?php echo e(number_format($news->views)); ?> views</span>
@@ -59,7 +61,7 @@
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <div class="prose prose-sm sm:prose lg:prose-lg max-w-none mb-12 text-gray-800 leading-relaxed">
-                <?php echo $news->content; ?>
+                <?php echo app(\App\Services\ContentImageService::class)->optimizeHtmlImages($news->content); ?>
 
             </div>
 
@@ -78,22 +80,28 @@
             </div>
 
             <!-- Share Section -->
-            <div
+            <?php
+                $shareUrl = urlencode(url()->current());
+                $shareText = urlencode($news->title);
+            ?>
+            <div x-data="{ copied: false }"
                 class="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col md:flex-row justify-between items-center mb-12">
                 <span class="font-bold mb-4 md:mb-0">BAGIKAN ARTIKEL INI:</span>
-                <div class="flex space-x-2">
-                    <a href="#"
+                <div class="flex items-center space-x-2">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo e($shareUrl); ?>" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke Facebook"
                         class="bg-[#1877F2] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-facebook-f"></i></a>
-                    <a href="#"
+                    <a href="https://twitter.com/intent/tweet?url=<?php echo e($shareUrl); ?>&text=<?php echo e($shareText); ?>" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke Twitter"
                         class="bg-[#1DA1F2] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-twitter"></i></a>
-                    <a href="#"
+                    <a href="https://wa.me/?text=<?php echo e($shareText); ?>%20<?php echo e($shareUrl); ?>" target="_blank" rel="noopener noreferrer" aria-label="Bagikan ke WhatsApp"
                         class="bg-[#25D366] text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
                             class="fab fa-whatsapp"></i></a>
-                    <a href="#"
+                    <button type="button" aria-label="Salin tautan artikel"
+                        @click="navigator.clipboard?.writeText(<?php echo \Illuminate\Support\Js::from(url()->current())->toHtml() ?>); copied = true; setTimeout(() => copied = false, 2000)"
                         class="bg-gray-800 text-white w-10 h-10 flex items-center justify-center rounded-full hover:opacity-80 transition"><i
-                            class="fas fa-link"></i></a>
+                            class="fas fa-link"></i></button>
+                    <span x-show="copied" x-transition class="text-xs font-semibold text-green-700" style="display:none;">Tersalin!</span>
                 </div>
             </div>
 
@@ -142,7 +150,7 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full max-w-[275px] mx-auto">
                 <h3 class="font-bold mb-6 border-l-4 border-red-700 pl-3 uppercase">Paling Populer</h3>
                 <div class="space-y-6">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = \App\Models\News::where('status', 'publish')->orderBy('views', 'desc')->take(5)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $popular): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ($popularNews ?? collect()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $popular): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <div class="flex space-x-4 items-start group">
                             <span
                                 class="text-2xl font-black text-gray-200 group-hover:text-red-700 transition"><?php echo e($index + 1); ?></span>
@@ -160,4 +168,4 @@
         </div>
     </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\wisataok\resources\views/news/show.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\wisata-dispora\resources\views/news/show.blade.php ENDPATH**/ ?>

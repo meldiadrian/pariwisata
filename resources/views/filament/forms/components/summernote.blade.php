@@ -53,6 +53,41 @@
                             if (this.state) {
                                 editor.summernote('code', this.state);
                             }
+                        },
+                        onImageUpload: (files) => {
+                            Array.from(files).forEach((file) => {
+                                const formData = new FormData();
+                                formData.append('image', file);
+
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+                                    || document.querySelector('input[name="_token"]')?.value
+                                    || @js(csrf_token());
+
+                                fetch(@js(route('admin.editor-image-upload')), {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': csrfToken,
+                                        'Accept': 'application/json',
+                                    },
+                                    credentials: 'same-origin',
+                                    body: formData,
+                                })
+                                    .then((res) => {
+                                        if (!res.ok) {
+                                            throw new Error('Upload gagal (' + res.status + ')');
+                                        }
+                                        return res.json();
+                                    })
+                                    .then((data) => {
+                                        if (data.url) {
+                                            editor.summernote('insertImage', data.url);
+                                            this.state = editor.summernote('code');
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        alert(err.message || 'Gagal mengunggah gambar.');
+                                    });
+                            });
                         }
                     }
                 });

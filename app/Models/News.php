@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\ConvertsBase64ContentImages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class News extends Model
 {
     /** @use HasFactory<\Database\Factories\NewsFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, ConvertsBase64ContentImages;
 
     protected $guarded = [];
 

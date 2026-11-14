@@ -23,6 +23,7 @@ class CreateNews extends CreateRecord
             'news:headlines',
             'news:trending',
             'news:breaking',
+            'news:popular',
             'galleries:home',
         ];
     }

@@ -21,6 +21,15 @@ class FrontendController extends Controller
     const TTL_LONG   = 3600;  // 60 menit — konten sangat statis (settings, slider, kategori)
 
     /**
+     * Kolom ringkas untuk daftar berita agar tidak memuat kolom `content` yang besar.
+     */
+    private const NEWS_LIST_COLUMNS = [
+        'id', 'category_id', 'user_id', 'title', 'slug',
+        'summary', 'thumbnail', 'published_at', 'views',
+        'is_breaking', 'is_headline', 'is_trending', 'status', 'created_at',
+    ];
+
+    /**
      * Ambil settings (sangat statis, cache 60 menit).
      */
     private function getSetting()
@@ -44,7 +53,26 @@ class FrontendController extends Controller
     private function getBreaking()
     {
         return Cache::remember('news:breaking', self::TTL_SHORT, fn () =>
-            News::with('category')->where('is_breaking', true)->where('status', 'publish')->latest()->first()
+            News::select(self::NEWS_LIST_COLUMNS)
+                ->with('category')
+                ->where('is_breaking', true)
+                ->where('status', 'publish')
+                ->latest()
+                ->first()
+        );
+    }
+
+    /**
+     * Ambil 5 berita paling populer untuk sidebar (tanpa kolom `content`).
+     */
+    private function getPopularNews()
+    {
+        return Cache::remember('news:popular', self::TTL_SHORT, fn () =>
+            News::select(['id', 'title', 'slug', 'views'])
+                ->where('status', 'publish')
+                ->orderBy('views', 'desc')
+                ->take(5)
+                ->get()
         );
     }
 
@@ -64,15 +92,31 @@ class FrontendController extends Controller
         $categories = $this->getCategories();
 
         $headlines = Cache::remember('news:headlines', self::TTL_SHORT, fn () =>
-            News::with('category')->where('is_headline', true)->where('status', 'publish')->latest()->take(5)->get()
+            News::select(self::NEWS_LIST_COLUMNS)
+                ->with('category')
+                ->where('is_headline', true)
+                ->where('status', 'publish')
+                ->latest()
+                ->take(5)
+                ->get()
         );
 
         $trending = Cache::remember('news:trending', self::TTL_SHORT, fn () =>
-            News::with('category')->where('is_trending', true)->where('status', 'publish')->latest()->take(3)->get()
+            News::select(self::NEWS_LIST_COLUMNS)
+                ->with('category')
+                ->where('is_trending', true)
+                ->where('status', 'publish')
+                ->latest()
+                ->take(3)
+                ->get()
         );
 
         $breaking    = $this->getBreaking();
-        $latestNews  = News::with(['category', 'user'])->where('status', 'publish')->latest()->paginate(10);
+        $latestNews  = News::select(self::NEWS_LIST_COLUMNS)
+            ->with(['category', 'user'])
+            ->where('status', 'publish')
+            ->latest()
+            ->paginate(10);
         $sidebarAds  = $this->sidebarAds();
 
         // Galleries: photo + video digabung, cache 10 menit
@@ -144,12 +188,18 @@ class FrontendController extends Controller
         }
 
         $related = Cache::remember("news:related:{$news->category_id}:{$news->id}", self::TTL_SHORT, fn () =>
-            News::where('category_id', $news->category_id)->where('id', '!=', $news->id)->take(3)->get()
+            News::select(self::NEWS_LIST_COLUMNS)
+                ->where('category_id', $news->category_id)
+                ->where('id', '!=', $news->id)
+                ->where('status', 'publish')
+                ->take(3)
+                ->get()
         );
 
-        $sidebarAds = $this->sidebarAds();
+        $sidebarAds  = $this->sidebarAds();
+        $popularNews = $this->getPopularNews();
 
-        return view('news.show', compact('setting', 'categories', 'breaking', 'news', 'related', 'sidebarAds'));
+        return view('news.show', compact('setting', 'categories', 'breaking', 'news', 'related', 'sidebarAds', 'popularNews'));
     }
 
     public function category($slug)
@@ -163,10 +213,16 @@ class FrontendController extends Controller
         );
 
         // Paginated news tidak di-cache karena tergantung query param page
-        $news       = News::with('category')->where('category_id', $category->id)->where('status', 'publish')->latest()->paginate(10);
-        $sidebarAds = $this->sidebarAds();
+        $news = News::select(self::NEWS_LIST_COLUMNS)
+            ->with(['category', 'user'])
+            ->where('category_id', $category->id)
+            ->where('status', 'publish')
+            ->latest()
+            ->paginate(10);
+        $sidebarAds  = $this->sidebarAds();
+        $popularNews = $this->getPopularNews();
 
-        return view('news.category', compact('setting', 'categories', 'breaking', 'category', 'news', 'sidebarAds'));
+        return view('news.category', compact('setting', 'categories', 'breaking', 'category', 'news', 'sidebarAds', 'popularNews'));
     }
 
     public function page($slug)

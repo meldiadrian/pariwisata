@@ -38,13 +38,13 @@
                                     :sizes="['thumbnail' => 300, 'small' => 400]" />
                             </div>
                             <div class="flex-1">
-                                <span class="text-red-700 text-xs font-bold uppercase">{{ $item->category->name }}</span>
+                                <span class="text-red-700 text-xs font-bold uppercase">{{ $item->category?->name ?? $category->name }}</span>
                                 <h3 class="text-xl font-bold mb-2 group-hover:text-red-700 transition">
                                     <a href="{{ route('news.show', $item->slug) }}">{{ $item->title }}</a>
                                 </h3>
                                 <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $item->summary }}</p>
                                 <div class="flex items-center text-xs text-gray-400 space-x-4">
-                                    <span><i class="far fa-user mr-1"></i> {{ $item->user->name }}</span>
+                                    <span><i class="far fa-user mr-1"></i> {{ $item->user?->name ?? 'Admin' }}</span>
                                     <span><i class="far fa-clock mr-1"></i>
                                         {{ optional($item->published_at)->format('d M Y') }}</span>
                                     <span><i class="far fa-eye mr-1"></i> {{ number_format($item->views) }}</span>
@@ -72,7 +72,7 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full max-w-[275px] mx-auto">
                 <h3 class="font-bold mb-6 border-l-4 border-red-700 pl-3 uppercase">Paling Populer</h3>
                 <div class="space-y-6">
-                    @foreach(\App\Models\News::where('status', 'publish')->orderBy('views', 'desc')->take(5)->get() as $index => $popular)
+                    @foreach(($popularNews ?? collect()) as $index => $popular)
                         <div class="flex space-x-4 items-start group">
                             <span
                                 class="text-2xl font-black text-gray-200 group-hover:text-red-700 transition">{{ $index + 1 }}</span>

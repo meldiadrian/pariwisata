@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\EditorImageUploadController;
 
 use App\Models\News;
 
@@ -20,6 +21,10 @@ Route::middleware('page.cache')->group(function () {
 });
 
 Route::get('/user/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::post('/bermasa/editor-image-upload', EditorImageUploadController::class)
+    ->middleware('auth')
+    ->name('admin.editor-image-upload');
 
 // Block direct access to livewire-tmp folder
 Route::any('storage/livewire-tmp/{path?}', function () {

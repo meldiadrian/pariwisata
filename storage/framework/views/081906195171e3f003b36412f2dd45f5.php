@@ -11,7 +11,7 @@
                     <div class="swiper-slide relative">
                         <?php if (isset($component)) { $__componentOriginale75524dba4ffced2baa5b8fd1d6ea996 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale75524dba4ffced2baa5b8fd1d6ea996 = $attributes; } ?>
-<?php $component = App\View\Components\ResponsiveImage::resolve(['src' => asset('storage/' . $news->thumbnail),'alt' => $news->title,'class' => 'w-full h-full object-cover','lazy' => false,'sizes' => ['large' => 1200, 'medium' => 800]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = App\View\Components\ResponsiveImage::resolve(['src' => $news->thumbnail,'alt' => $news->title,'class' => 'w-full h-full object-cover','lazy' => !$loop->first,'fetchpriority' => $loop->first ? 'high' : null,'sizes' => ['large' => 1200, 'medium' => 800]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('responsive-image'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
@@ -32,7 +32,7 @@
 <?php unset($__componentOriginale75524dba4ffced2baa5b8fd1d6ea996); ?>
 <?php endif; ?>
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6 md:p-8">
-                            <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block"><?php echo e($news->category->name); ?></span>
+                            <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block"><?php echo e($news->category?->name ?? 'Berita'); ?></span>
                             <h2 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
                                 <a href="<?php echo e(route('news.show', $news->slug)); ?>" class="hover:underline"><?php echo e($news->title); ?></a>
                             </h2>
@@ -55,7 +55,7 @@
                 <div class="flex items-start space-x-4 group border-b border-gray-100 pb-4">
                     <span class="text-3xl font-black text-gray-200 group-hover:text-red-700 transition"><?php echo e($index + 1); ?></span>
                     <div>
-                        <span class="text-red-700 text-xs font-bold uppercase"><?php echo e($news->category->name); ?></span>
+                        <span class="text-red-700 text-xs font-bold uppercase"><?php echo e($news->category?->name ?? 'Berita'); ?></span>
                         <h4 class="font-bold leading-tight group-hover:text-red-700 transition">
                             <a href="<?php echo e(route('news.show', $news->slug)); ?>"><?php echo e($news->title); ?></a>
                         </h4>
@@ -188,9 +188,12 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($setting->sambutan_link_selengkapnya): ?>
+                    <?php
+                        $sambutanUrl = \App\Models\Setting::normalizeInternalUrl($setting->sambutan_link_selengkapnya);
+                    ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($sambutanUrl): ?>
                     <div>
-                        <a href="<?php echo e($setting->sambutan_link_selengkapnya); ?>"
+                        <a href="<?php echo e($sambutanUrl); ?>"
                            class="inline-flex items-center gap-2 text-gray-800 font-bold text-sm hover:text-green-600 transition-colors duration-200 group/link">
                             Baca Selengkapnya
                             <svg class="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -355,8 +358,11 @@
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         
                         <div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-red-700 flex items-center gap-1 shadow-sm z-10">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting->logo)): ?>
-                                <img src="<?php echo e(asset('storage/' . $setting->logo)); ?>"
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($setting?->logo)): ?>
+                                <img src="<?php echo e(\App\Helpers\ImageHelper::getWebPUrl($setting->logo)); ?>"
+                                     alt=""
+                                     loading="lazy"
+                                     decoding="async"
                                      class="h-3.5 w-3.5 object-contain"
                                      onerror="this.style.display='none'">
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -592,16 +598,16 @@
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $latestNews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $news): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
                     <div class="w-full sm:w-1/3 shrink-0 overflow-hidden rounded-lg shadow-sm">
-                        <img src="<?php echo e($news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News'); ?>" loading="lazy" decoding="async" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
+                        <img src="<?php echo e($news->thumbnail ? \App\Helpers\ImageHelper::getWebPUrl($news->thumbnail) : 'https://placehold.co/400x300?text=News'); ?>" alt="<?php echo e($news->title); ?>" loading="lazy" decoding="async" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="flex-1">
-                        <span class="text-red-700 text-xs font-bold uppercase"><?php echo e($news->category->name); ?></span>
+                        <span class="text-red-700 text-xs font-bold uppercase"><?php echo e($news->category?->name ?? 'Berita'); ?></span>
                         <h3 class="text-xl font-bold mb-2 group-hover:text-red-700 transition">
                             <a href="<?php echo e(route('news.show', $news->slug)); ?>"><?php echo e($news->title); ?></a>
                         </h3>
                         <p class="text-gray-600 text-sm mb-4 line-clamp-3"><?php echo e($news->summary); ?></p>
                         <div class="flex items-center text-xs text-gray-400 space-x-4">
-                            <span><i class="far fa-user mr-1"></i> <?php echo e($news->user->name); ?></span>
+                            <span><i class="far fa-user mr-1"></i> <?php echo e($news->user?->name ?? 'Admin'); ?></span>
                             <span><i class="far fa-clock mr-1"></i> <?php echo e(optional($news->published_at)->format('d M Y')); ?></span>
                             <span><i class="far fa-eye mr-1"></i> <?php echo e(number_format($news->views)); ?></span>
                         </div>
@@ -634,95 +640,11 @@
                 </div>
             </div>
 
-            <!-- Tags Widget -->
-            <!--<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="font-bold mb-4 border-l-4 border-red-700 pl-3">TAG POPULER</h3>
-                <div class="flex flex-wrap gap-2">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = \App\Models\Tag::take(10)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                    <a href="#" class="bg-gray-100 hover:bg-red-700 hover:text-white px-3 py-1 rounded-full text-xs text-gray-600 transition">
-                        #<?php echo e($tag->name); ?>
-
-                    </a>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                </div>
-            </div>-->
-        </div>
-    </div>
-
-    <!-- Festival Section -->
-    <!-- <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($festivals->count() > 0): ?>
-    <div id="festival" class="mt-16 mb-12" x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '' }">
-        <div class="text-center mb-10">
-            <h3 class="text-4xl font-bold text-slate-900 mb-2">Festival & Kegiatan</h3>
-            <p class="text-slate-500 text-lg">Event dan kegiatan terbaru kami</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $festivals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $festival): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden
-                        hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                
-                <div class="relative overflow-hidden aspect-square bg-gray-100 cursor-pointer"
-                     @click="lightboxOpen = true; lightboxImage = '<?php echo e(asset('storage/' . $festival->image)); ?>'; lightboxTitle = '<?php echo e(addslashes($festival->title)); ?>'">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($festival->image): ?>
-                        <img src="<?php echo e(asset('storage/' . $festival->image)); ?>"
-                             alt="<?php echo e($festival->title); ?>"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                            <i class="fas fa-search-plus text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></i>
-                        </div>
-                    <?php else: ?>
-                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
-                            <i class="fas fa-image text-5xl text-red-200"></i>
-                        </div>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                </div>
-
-                
-                <div class="p-5 text-center">
-                    <h4 class="font-bold text-gray-800 text-lg leading-snug mb-2">
-                        <?php echo e($festival->title); ?>
-
-                    </h4>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($festival->event_date): ?>
-                        <p class="text-sm font-medium text-blue-400">
-                            <?php echo e($festival->event_date->translatedFormat('d M Y')); ?>
-
-                        </p>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($festival->description): ?>
-                        <p class="text-xs text-gray-400 mt-2 line-clamp-2"><?php echo e($festival->description); ?></p>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                </div>
-            </div>
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-        </div>
-
-        
-        <div x-show="lightboxOpen" style="display: none;"
-             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0">
             
-            <div class="relative max-w-5xl w-full h-full flex flex-col items-center justify-center" @click.away="lightboxOpen = false">
-                
-                <button @click="lightboxOpen = false" class="absolute top-4 right-4 text-white/70 hover:text-white z-10 focus:outline-none">
-                    <i class="fas fa-times text-4xl"></i>
-                </button>
-                
-                
-                <img :src="lightboxImage" :alt="lightboxTitle" class="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-sm">
-                
-                
-                <h4 x-text="lightboxTitle" class="text-white text-xl font-bold mt-4 text-center"></h4>
-            </div>
         </div>
     </div>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?> -->
+
+    
 
     <!-- Gallery Section------>
     <div id="galeri" class="mt-16 mb-8 flex flex-col items-center"
@@ -846,4 +768,4 @@
     </div>
 <?php $__env->stopSection(); ?> 
 
-<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\wisataok\resources\views/welcome.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\wisata-dispora\resources\views/welcome.blade.php ENDPATH**/ ?>

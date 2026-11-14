@@ -7,7 +7,7 @@
     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">{{ $page->title }}</h1>
     
     <div class="prose prose-sm sm:prose max-w-none text-gray-700 leading-relaxed">
-        {!! $page->content !!}
+        {!! app(\App\Services\ContentImageService::class)->optimizeHtmlImages($page->content) !!}
     </div>
 </div>
 @endsection

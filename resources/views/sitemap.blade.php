@@ -12,7 +12,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 @foreach ($news as $item)
 <url>
     <loc>{{ route('news.show', $item->slug) }}</loc>
-    <lastmod>{{ $item->updated_at->toAtomString() }}</lastmod>
+    <lastmod>{{ optional($item->updated_at ?? now())->toAtomString() }}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
 </url>

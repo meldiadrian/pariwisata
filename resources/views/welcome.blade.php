@@ -12,14 +12,15 @@
                     @foreach($headlines as $news)
                     <div class="swiper-slide relative">
                         <x-responsive-image 
-                            :src="asset('storage/' . $news->thumbnail)" 
+                            :src="$news->thumbnail" 
                             :alt="$news->title"
                             class="w-full h-full object-cover"
-                            :lazy="false"
+                            :lazy="!$loop->first"
+                            :fetchpriority="$loop->first ? 'high' : null"
                             :sizes="['large' => 1200, 'medium' => 800]"
                         />
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6 md:p-8">
-                            <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category->name }}</span>
+                            <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category?->name ?? 'Berita' }}</span>
                             <h2 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
                                 <a href="{{ route('news.show', $news->slug) }}" class="hover:underline">{{ $news->title }}</a>
                             </h2>
@@ -42,7 +43,7 @@
                 <div class="flex items-start space-x-4 group border-b border-gray-100 pb-4">
                     <span class="text-3xl font-black text-gray-200 group-hover:text-red-700 transition">{{ $index + 1 }}</span>
                     <div>
-                        <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category->name }}</span>
+                        <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category?->name ?? 'Berita' }}</span>
                         <h4 class="font-bold leading-tight group-hover:text-red-700 transition">
                             <a href="{{ route('news.show', $news->slug) }}">{{ $news->title }}</a>
                         </h4>
@@ -174,9 +175,12 @@
                     @endif
 
                     {{-- Read More Link --}}
-                    @if($setting->sambutan_link_selengkapnya)
+                    @php
+                        $sambutanUrl = \App\Models\Setting::normalizeInternalUrl($setting->sambutan_link_selengkapnya);
+                    @endphp
+                    @if($sambutanUrl)
                     <div>
-                        <a href="{{ $setting->sambutan_link_selengkapnya }}"
+                        <a href="{{ $sambutanUrl }}"
                            class="inline-flex items-center gap-2 text-gray-800 font-bold text-sm hover:text-green-600 transition-colors duration-200 group/link">
                             Baca Selengkapnya
                             <svg class="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -340,8 +344,11 @@
                         @endif
                         {{-- Disparbudpora badge --}}
                         <div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-red-700 flex items-center gap-1 shadow-sm z-10">
-                            @if(!empty($setting->logo))
-                                <img src="{{ asset('storage/' . $setting->logo) }}"
+                            @if(!empty($setting?->logo))
+                                <img src="{{ \App\Helpers\ImageHelper::getWebPUrl($setting->logo) }}"
+                                     alt=""
+                                     loading="lazy"
+                                     decoding="async"
                                      class="h-3.5 w-3.5 object-contain"
                                      onerror="this.style.display='none'">
                             @endif
@@ -572,16 +579,16 @@
                 @foreach($latestNews as $news)
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
                     <div class="w-full sm:w-1/3 shrink-0 overflow-hidden rounded-lg shadow-sm">
-                        <img src="{{ $news->thumbnail ? asset('storage/'.$news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" loading="lazy" decoding="async" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
+                        <img src="{{ $news->thumbnail ? \App\Helpers\ImageHelper::getWebPUrl($news->thumbnail) : 'https://placehold.co/400x300?text=News' }}" alt="{{ $news->title }}" loading="lazy" decoding="async" class="w-full h-44 sm:h-48 object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="flex-1">
-                        <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category->name }}</span>
+                        <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category?->name ?? 'Berita' }}</span>
                         <h3 class="text-xl font-bold mb-2 group-hover:text-red-700 transition">
                             <a href="{{ route('news.show', $news->slug) }}">{{ $news->title }}</a>
                         </h3>
                         <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $news->summary }}</p>
                         <div class="flex items-center text-xs text-gray-400 space-x-4">
-                            <span><i class="far fa-user mr-1"></i> {{ $news->user->name }}</span>
+                            <span><i class="far fa-user mr-1"></i> {{ $news->user?->name ?? 'Admin' }}</span>
                             <span><i class="far fa-clock mr-1"></i> {{ optional($news->published_at)->format('d M Y') }}</span>
                             <span><i class="far fa-eye mr-1"></i> {{ number_format($news->views) }}</span>
                         </div>
@@ -613,8 +620,8 @@
                 </div>
             </div>
 
-            <!-- Tags Widget -->
-            <!--<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            {{-- Tags Widget (nonaktif)
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="font-bold mb-4 border-l-4 border-red-700 pl-3">TAG POPULER</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach(\App\Models\Tag::take(10)->get() as $tag)
@@ -623,12 +630,13 @@
                     </a>
                     @endforeach
                 </div>
-            </div>-->
+            </div>
+            --}}
         </div>
     </div>
 
-    <!-- Festival Section -->
-    <!-- @if($festivals->count() > 0)
+    {{-- Festival Section (nonaktif)
+    @if($festivals->count() > 0)
     <div id="festival" class="mt-16 mb-12" x-data="{ lightboxOpen: false, lightboxImage: '', lightboxTitle: '' }">
         <div class="text-center mb-10">
             <h3 class="text-4xl font-bold text-slate-900 mb-2">Festival & Kegiatan</h3>
@@ -639,7 +647,6 @@
             @foreach($festivals as $festival)
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden
                         hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                {{-- Poster Image --}}
                 <div class="relative overflow-hidden aspect-square bg-gray-100 cursor-pointer"
                      @click="lightboxOpen = true; lightboxImage = '{{ asset('storage/' . $festival->image) }}'; lightboxTitle = '{{ addslashes($festival->title) }}'">
                     @if($festival->image)
@@ -656,7 +663,6 @@
                     @endif
                 </div>
 
-                {{-- Card Info --}}
                 <div class="p-5 text-center">
                     <h4 class="font-bold text-gray-800 text-lg leading-snug mb-2">
                         {{ $festival->title }}
@@ -674,7 +680,6 @@
             @endforeach
         </div>
 
-        {{-- Lightbox Modal --}}
         <div x-show="lightboxOpen" style="display: none;"
              class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
              x-transition:enter="transition ease-out duration-300"
@@ -685,20 +690,18 @@
              x-transition:leave-end="opacity-0">
             
             <div class="relative max-w-5xl w-full h-full flex flex-col items-center justify-center" @click.away="lightboxOpen = false">
-                {{-- Close Button --}}
                 <button @click="lightboxOpen = false" class="absolute top-4 right-4 text-white/70 hover:text-white z-10 focus:outline-none">
                     <i class="fas fa-times text-4xl"></i>
                 </button>
                 
-                {{-- Full Image --}}
                 <img :src="lightboxImage" :alt="lightboxTitle" class="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-sm">
                 
-                {{-- Title --}}
                 <h4 x-text="lightboxTitle" class="text-white text-xl font-bold mt-4 text-center"></h4>
             </div>
         </div>
     </div>
-    @endif -->
+    @endif
+    --}}
 
     <!-- Gallery Section------>
     <div id="galeri" class="mt-16 mb-8 flex flex-col items-center"

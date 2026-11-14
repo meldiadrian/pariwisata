@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $setting->maintenance_title ?? 'Website Under Maintenance' }}</title>
+    <title>{{ $setting?->maintenance_title ?? 'Website Under Maintenance' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
@@ -110,7 +110,7 @@
 
             {{-- Main Message --}}
             <h1 class="text-s md:text-s font-extrabold text-white mb-3 drop-shadow-lg">
-                {{ $setting->maintenance_title ?? 'Website Under Maintenance' }}
+                {{ $setting?->maintenance_title ?? 'Website Under Maintenance' }}
             </h1>
 
             <div class="inline-block glass-effect px-6 py-3 rounded-full mb-8">
@@ -131,7 +131,7 @@
         <div class="glass-effect rounded-3xl p-6 md:p-8 shadow-2xl mb-6">
             <div class="text-center mb-6">
                 <p class="text-lg md:text-xl text-white/90 leading-relaxed">
-                    {{ $setting->maintenance_message ?? 'We are currently performing scheduled maintenance to improve your experience. We\'ll be back shortly!' }}
+                    {{ $setting?->maintenance_message ?? 'We are currently performing scheduled maintenance to improve your experience. We\'ll be back shortly!' }}
                 </p>
             </div>
 
@@ -179,7 +179,7 @@
             <div class="text-center border-t border-white/20 pt-6">
                 <p class="text-white/80 mb-4">Need immediate assistance?</p>
                 <div class="flex flex-wrap justify-center gap-4">
-                    @if(!empty($setting->email))
+                    @if(!empty($setting?->email))
                         <a href="mailto:{{ $setting->email }}"
                             class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl text-white font-medium transition-all duration-300 transform hover:scale-105">
                             <i class="fas fa-envelope"></i>
@@ -187,7 +187,7 @@
                         </a>
                     @endif
 
-                    @if(!empty($setting->phone))
+                    @if(!empty($setting?->phone))
                         <a href="tel:{{ $setting->phone }}"
                             class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl text-white font-medium transition-all duration-300 transform hover:scale-105">
                             <i class="fas fa-phone"></i>
@@ -203,11 +203,11 @@
             <p class="text-white/70 mb-4">
                 <i class="far fa-clock mr-2"></i>
                 Started:
-                {{ $setting->maintenance_started_at ? $setting->maintenance_started_at->format('d F Y, H:i') : now()->format('d F Y, H:i') }}
+                {{ $setting?->maintenance_started_at ? $setting->maintenance_started_at->format('d F Y, H:i') : now()->format('d F Y, H:i') }}
                 WIB
             </p>
             <p class="text-white/60 text-sm">
-                © {{ now()->year }} {{ $setting->site_name ?? config('app.name') }}. All rights reserved.
+                © {{ now()->year }} {{ $setting?->site_name ?? config('app.name') }}. All rights reserved.
             </p>
 
             {{-- Social Media Links (if available) --}}
