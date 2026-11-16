@@ -174,9 +174,11 @@ class FrontendController extends Controller
         $categories = $this->getCategories();
         $breaking   = $this->getBreaking();
 
-        // Berita individual: cache per slug (5 menit)
+        // Berita individual: cache per slug (5 menit) lengkap dengan relasinya agar tidak lazy-load di view
         $news = Cache::remember("news:slug:{$slug}", self::TTL_SHORT, fn () =>
-            News::where('slug', $slug)->firstOrFail()
+            News::with(['category', 'user', 'tags'])
+                ->where('slug', $slug)
+                ->firstOrFail()
         );
 
         // Increment views — operasi ini tidak perlu di-cache, tapi jangan sampai double-count
