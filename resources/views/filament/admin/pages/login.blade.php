@@ -450,9 +450,9 @@
             /* Shadow */
             box-shadow:
                 0 8px 28px rgba(16, 185, 129, 0.45),
-                0 2px 8px rgba(16, 185, 129, 0.45),
-                /* Transition */
-                transition: background-position 0.5s ease,
+                0 2px 8px rgba(16, 185, 129, 0.45);
+            /* Transition */
+            transition: background-position 0.5s ease,
                 transform 0.25s ease,
                 box-shadow 0.25s ease;
         }
@@ -486,6 +486,30 @@
         .lc-btn:active {
             transform: translateY(0);
             box-shadow: 0 6px 18px rgba(16, 185, 129, 0.32);
+        }
+
+        /* ── Disabled Submit Button (Menunggu reCAPTCHA) ── */
+        .lc-btn:disabled,
+        .lc-btn.is-disabled {
+            opacity: 0.45 !important;
+            cursor: not-allowed !important;
+            filter: grayscale(0.7) !important;
+            transform: none !important;
+            box-shadow: none !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        .lc-btn:disabled:hover,
+        .lc-btn.is-disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            background-position: 0% center !important;
+        }
+
+        .lc-btn:disabled::before,
+        .lc-btn.is-disabled::before {
+            display: none !important;
         }
 
         /* ────────────────────────────────────────────
@@ -561,7 +585,45 @@
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, scopes: $this->getRenderHookScopes()) }}
 
         {{-- ── Form ── --}}
-        <form wire:submit="authenticate">
+        <form
+            wire:submit="authenticate"
+            x-data="{
+                email: '',
+                password: '',
+                isRecaptchaVerified: Boolean($wire.get('data.recaptcha_token')),
+                checkInputs() {
+                    const em = this.$el.querySelector('input[name=\'data.email\'], input[type=\'email\'], #form\\.email, input[wire\\:model*=\'email\']');
+                    const pw = this.$el.querySelector('input[name=\'data.password\'], #form\\.password, input[wire\\:model*=\'password\'], input[type=\'password\']');
+                    this.email = em ? (em.value || '').trim() : '';
+                    this.password = pw ? (pw.value || '').trim() : '';
+                },
+                get isFormValid() {
+                    return this.email.length > 0 &&
+                           this.password.length > 0 &&
+                           this.isRecaptchaVerified;
+                },
+                get tooltipText() {
+                    if (!this.email) return 'Silakan isi email / username terlebih dahulu';
+                    if (!this.password) return 'Silakan isi kata sandi terlebih dahulu';
+                    if (!this.isRecaptchaVerified) return 'Selesaikan verifikasi reCAPTCHA terlebih dahulu';
+                    return '';
+                }
+            }"
+            x-init="
+                checkInputs();
+                setTimeout(() => checkInputs(), 250);
+                setTimeout(() => checkInputs(), 800);
+                $watch('$wire.data.recaptcha_token', (val) => {
+                    isRecaptchaVerified = Boolean(val);
+                });
+            "
+            x-on:input="checkInputs()"
+            x-on:change="checkInputs()"
+            x-on:paste="setTimeout(() => checkInputs(), 50)"
+            x-on:recaptcha-verified.window="isRecaptchaVerified = true"
+            x-on:recaptcha-expired.window="isRecaptchaVerified = false"
+            x-on:submit="if (!isFormValid) { $event.stopImmediatePropagation(); $event.preventDefault(); return false; }"
+        >
             <div class="lc-form" id="lc-form">
                 {{ $this->form }}
             </div>
@@ -575,7 +637,14 @@
 
             {{-- Submit --}}
             <div class="lc-btn-wrap">
-                <button type="submit" class="lc-btn" id="lc-submit-btn">
+                <button
+                    type="submit"
+                    class="lc-btn"
+                    id="lc-submit-btn"
+                    :disabled="!isFormValid"
+                    :class="{ 'is-disabled': !isFormValid }"
+                    :title="tooltipText"
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2.8" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -614,6 +683,10 @@
                     el.style.borderRadius = '9999px';
                     el.style.overflow = 'hidden';
                 });
+
+                // Notify Alpine to refresh input values
+                const form = document.querySelector('form[wire\\:submit="authenticate"]');
+                if (form) form.dispatchEvent(new Event('input'));
             }
 
             document.addEventListener('DOMContentLoaded', patchForm);
