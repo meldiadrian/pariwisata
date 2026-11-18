@@ -21,7 +21,7 @@
                         />
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6 md:p-8">
                             <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category?->name ?? 'Berita' }}</span>
-                            <h2 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
+                            <h2 class="text-base sm:text-sm md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
                                 <a href="{{ route('news.show', $news->slug) }}" class="hover:underline">{{ $news->title }}</a>
                             </h2>
                             <p class="hidden sm:block text-gray-200 text-xs sm:text-sm line-clamp-2">{{ $news->summary }}</p>
@@ -37,13 +37,13 @@
 
         <!-- Trending Sidebar -->
         <div class="lg:col-span-1">
-            <h3 class="text-xl font-bold mb-4 border-l-4 border-red-700 pl-3">TERPOPULER</h3>
+            <h3 class="text-sm font-bold mb-4 border-l-4 border-red-700 pl-3">TERPOPULER</h3>
             <div class="space-y-4 max-h-[200px] sm:max-h-[280px] lg:max-h-none overflow-y-auto lg:overflow-visible pr-1">
                 @foreach($trending as $index => $news)
                 <div class="flex items-start space-x-4 group border-b border-gray-100 pb-4">
                     <span class="text-3xl font-black text-gray-200 group-hover:text-red-700 transition">{{ $index + 1 }}</span>
                     <div>
-                        <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category?->name ?? 'Berita' }}</span>
+                        <span class="text-red-700 text-sm font-bold uppercase">{{ $news->category?->name ?? 'Berita' }}</span>
                         <h4 class="font-bold leading-tight group-hover:text-red-700 transition">
                             <a href="{{ route('news.show', $news->slug) }}">{{ $news->title }}</a>
                         </h4>
@@ -153,7 +153,7 @@
                     </div>
 
                     {{-- Title --}}
-                    <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 mb-2 leading-tight">
+                    <h2 class="text-sm sm:text-2xl md:text-3xl font-black text-gray-900 mb-2 leading-tight">
                         Selamat Datang di {{ $setting->site_name ?? config('app.name') }}
                     </h2>
 
@@ -574,7 +574,7 @@
     <!-- Latest News Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
-            <h3 class="text-xl sm:text-2xl font-black mb-6 border-b-2 border-red-700 inline-block pb-1">BERITA TERBARU</h3>
+            <h3 class="text-sm sm:text-2xl font-black mb-6 border-b-2 border-red-700 inline-block pb-1">BERITA TERBARU</h3>
             <div class="space-y-6 sm:space-y-8">
                 @foreach($latestNews as $news)
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
@@ -583,7 +583,7 @@
                     </div>
                     <div class="flex-1">
                         <span class="text-red-700 text-xs font-bold uppercase">{{ $news->category?->name ?? 'Berita' }}</span>
-                        <h3 class="text-xl font-bold mb-2 group-hover:text-red-700 transition">
+                        <h3 class="text-sm font-bold mb-2 group-hover:text-red-700 transition">
                             <a href="{{ route('news.show', $news->slug) }}">{{ $news->title }}</a>
                         </h3>
                         <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $news->summary }}</p>
