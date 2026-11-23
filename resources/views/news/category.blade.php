@@ -39,7 +39,7 @@
                             </div>
                             <div class="flex-1">
                                 <span class="text-red-700 text-xs font-bold uppercase">{{ $item->category?->name ?? $category->name }}</span>
-                                <h3 class="text-xl font-bold mb-2 group-hover:text-red-700 transition">
+                                <h3 class="text-sm font-bold mb-2 group-hover:text-red-700 transition">
                                     <a href="{{ route('news.show', $item->slug) }}">{{ $item->title }}</a>
                                 </h3>
                                 <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $item->summary }}</p>
