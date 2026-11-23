@@ -23,7 +23,7 @@
                 </ol>
             </nav>
 
-            <h1 class="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black mb-4 leading-tight">{{ $news->title }}</h1>
+            <h1 class="text-s sm:text-s md:text-s lg:text-s font-black mb-4 leading-tight">{{ $news->title }}</h1>
 
             <div class="flex flex-wrap items-center text-xs sm:text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100 gap-x-4 gap-y-2">
                 <div class="flex items-center">
