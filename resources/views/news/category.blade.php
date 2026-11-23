@@ -20,7 +20,7 @@
 
     <!-- Category Header -->
     <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h1 class="text-2xl sm:text-3xl font-black text-gray-900">{{ $category->name }}</h1>
+        <h1 class="text-s sm:text-s font-black text-gray-900">{{ $category->name }}</h1>
         <p class="text-gray-500 mt-2">{{ $news->total() }} berita dalam kategori ini</p>
     </div>
 
