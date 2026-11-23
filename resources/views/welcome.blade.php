@@ -37,7 +37,7 @@
 
         <!-- Trending Sidebar -->
         <div class="lg:col-span-1">
-            <h3 class="text-sm font-bold mb-4 border-l-4 border-red-700 pl-3">TERPOPULER</h3>
+            <h3 class="font-bold text-sm mb-4 border-l-4 border-red-700 pl-3">TERPOPULER</h3>
             <div class="space-y-4 max-h-[200px] sm:max-h-[280px] lg:max-h-none overflow-y-auto lg:overflow-visible pr-1">
                 @foreach($trending as $index => $news)
                 <div class="flex items-start space-x-4 group border-b border-gray-100 pb-4">
