@@ -21,7 +21,7 @@
                         />
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6 md:p-8">
                             <span class="bg-red-700 text-white px-3 py-1 text-xs font-bold rounded mb-2 inline-block">{{ $news->category?->name ?? 'Berita' }}</span>
-                            <h2 class="text-base sm:text-sm md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 line-clamp-2">
+                            <h2 class="text-base sm:text-s md:text-s lg:text-s font-bold text-white mb-1 sm:mb-2 line-clamp-2">
                                 <a href="{{ route('news.show', $news->slug) }}" class="hover:underline">{{ $news->title }}</a>
                             </h2>
                             <p class="hidden sm:block text-gray-200 text-xs sm:text-sm line-clamp-2">{{ $news->summary }}</p>
